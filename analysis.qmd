@@ -1,0 +1,72 @@
+---
+title: "ManyClasses 2 Analysis"
+format: html
+editor: visual
+---
+
+```{r}
+#| label: Load packages
+#| include: false
+library(osfr)
+library(brms)
+library(tidyr)
+library(dplyr)
+```
+
+```{r}
+#| label: Get data from OSF
+#| include: false
+
+osf_retrieve_node("https://osf.io/t5ma3/") %>%
+  osf_ls_files(path="Analysis", pattern=".Rdata") %>%
+  osf_download(path="data", conflicts="skip")
+```
+
+```{r}
+#| label: Load data
+#| include: false
+
+load("data/analysis_set.Rdata")
+
+```
+
+
+```{r}
+#| label: Prepare data
+#| include: false
+
+overall_model_data <- datFrm %>%
+  select(participant_id, course_id, outcome_prequestions, points_possible_prequestions, outcome_control, points_possible_control) %>%
+  pivot_longer(cols = c(outcome_prequestions, outcome_control), 
+               names_to = "outcome_phase", values_to = "score",
+               names_prefix = "outcome_") %>%
+  pivot_longer(cols = c(points_possible_prequestions, points_possible_control), names_to = "trials_phase", values_to = "trials", names_prefix = "points_possible_") %>%
+  filter(outcome_phase == trials_phase) %>%
+  mutate(phase = outcome_phase) %>%
+  select(-trials_phase, -outcome_phase)
+
+```
+
+```{r}
+#| label: Fit model
+#| include: false
+
+fit <- brm(
+  formula = score | trials(trials) ~ phase + (1 + phase | course_id) + (1 | participant_id),
+  data = overall_model_data,
+  family = binomial(link = "logit"),
+  chains = 4,
+  iter = 2000,
+  warmup = 1000,
+  cores = 4
+)
+```
+
+```{r}
+#| label: Summarize model
+#| include: false
+
+summary(fit)
+```
+
+```{r}
