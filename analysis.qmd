@@ -11,6 +11,11 @@ library(osfr)
 library(brms)
 library(tidyr)
 library(dplyr)
+library(tidybayes)
+library(ggplot2)
+library(ggdist)
+library(bayesplot)
+library(forcats)
 ```
 
 ```{r}
@@ -36,7 +41,7 @@ load("data/analysis_set.Rdata")
 #| include: false
 
 overall_model_data <- datFrm %>%
-  select(participant_id, course_id, outcome_prequestions, points_possible_prequestions, outcome_control, points_possible_control) %>%
+  select(participant_id, course_id, outcome_prequestions, points_possible_prequestions, outcome_control, points_possible_control, exposure_order) %>%
   pivot_longer(cols = c(outcome_prequestions, outcome_control), 
                names_to = "outcome_phase", values_to = "score",
                names_prefix = "outcome_") %>%
@@ -51,8 +56,8 @@ overall_model_data <- datFrm %>%
 #| label: Fit model
 #| include: false
 
-fit <- brm(
-  formula = score | trials(trials) ~ phase + (1 + phase | course_id) + (1 | participant_id),
+fit_class <- brm(
+  formula = score | trials(trials) ~ phase + exposure_order + (1 + phase + exposure_order | course_id),
   data = overall_model_data,
   family = binomial(link = "logit"),
   chains = 4,
@@ -70,3 +75,66 @@ summary(fit)
 ```
 
 ```{r}
+#| label: My own model version
+#| include: false
+
+fit <- brm(
+  formula = score | trials(trials) ~ phase + exposure_order + (1 + phase | course_id/participant_id) + (0 + exposure_order | course_id),
+  data = overall_model_data,
+  family = binomial(link = "logit"),
+  chains = 4,
+  iter = 2000,
+  warmup = 1000,
+  cores = 4
+)
+```
+
+```{r}
+summary(fit)
+```
+
+
+```{r}
+#| label: Class-level forest plot of model estimates
+#| include: false
+
+# extract course_id coefficients from model fit
+
+get_variables(fit)
+
+```
+
+```{r}
+#| label: Course-level forest plot of model estimates
+#| echo: false
+
+forest_plot_data <- fit %>%
+  spread_draws(b_Intercept, b_phaseprequestions, r_course_id[id, phase]) %>%
+  filter(phase %in% c("phaseprequestions", "Intercept")) %>%
+  pivot_wider(names_from = phase, values_from = r_course_id) %>%
+  mutate(id = factor(id), course_effect = phaseprequestions + b_phaseprequestions) %>%
+  mutate(prob = plogis(b_Intercept + Intercept + course_effect) - plogis(b_Intercept + Intercept))
+
+forest_plot_data$id <- fct_reorder(forest_plot_data$id, forest_plot_data$prob, median)
+
+ggplot(forest_plot_data, aes(x = prob, y=id)) +
+  stat_pointinterval()+
+  labs(x="Improvement with pre-questions", y="Class")+
+  geom_vline(xintercept= 0.038)+
+  theme_minimal()
+  
+```
+
+```{r}
+
+```
+
+Fit class-level moderators using the model above, replacing exposure_order with class-level moderator.
+
+Use a different model for participant-level moderators.
+
+For assignment-level moderators, use assignment ID not nested in classes? Because there are only two assignments per class, nesting seems unhelpful. Instead allow for class-level intercept?
+
+Also fit a model where the outcome is whether/how much of the video they watch. Whether = > 5% of the video. Prediction is that prequestions will affect whether students watch the video.
+
+
