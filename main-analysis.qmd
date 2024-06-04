@@ -1,0 +1,86 @@
+---
+title: "Many Classes 2"
+format:
+  html:
+    fig-width: 8
+    fig-height: 4
+---
+
+```{r}
+library(osfr)
+library(brms)
+```
+
+```{r}
+#| label: load-data
+#| include: false
+
+osf_retrieve_file("https://osf.io/yks7a") %>%
+  osf_download(path="data")
+
+load("data/analysis_set.Rdata")
+```
+
+```{r}
+#| label: create-brm-data
+#| include: false
+
+# Simplify datFrm for only the participants, conditions, exposure, and outcome
+# ...in long format
+datFrm1 <- datFrm %>% select(participant_id,course_id,exposure_order,outcome_prequestions,outcome_control)
+datFrm1 <- datFrm1 %>% pivot_longer(!c(participant_id,course_id,exposure_order),names_to = "condition_name", values_to = "outcome_score")
+datFrm1 <- datFrm1 %>% mutate(condition_name = if_else(condition_name == "outcome_control","control","prequestions"))
+datFrm1 <- datFrm1 %>% mutate(exposure = case_when(exposure_order=="control_then_prequestion" & condition_name == "control" ~ 0,
+                                                   exposure_order=="control_then_prequestion" & condition_name == "prequestions" ~ 1,
+                                                   exposure_order=="prequestions_then_control" & condition_name == "control" ~ 1,
+                                                   exposure_order=="prequestions_then_control" & condition_name == "prequestions" ~ 0,
+                                                   .default = NA)) %>% select(!exposure_order)
+datFrm2 <- datFrm %>% select(participant_id,course_id,points_possible_prequestions,points_possible_control)
+datFrm2 <- datFrm2 %>% pivot_longer(!c(participant_id,course_id),names_to = "condition_name", names_prefix = "points_possible_", values_to = "points_possible")
+datFrm <- merge(datFrm1,datFrm2,by=c("participant_id","course_id","condition_name"),all.x=TRUE)
+rm(datFrm1,datFrm2)
+
+# Additional formatting adjustments
+datFrm <- na.omit(datFrm) # exclusion of missing outcome scores is preregistered
+datFrm$participant_id_factor <- as.numeric(as.factor(datFrm$participant_id))
+datFrm$course_id_factor <-as.numeric(as.factor(datFrm$course_id))
+
+# Prepare data for JAGS
+sub <- datFrm$participant_id_factor
+x <- if_else(datFrm$condition_name == "prequestions",1,0) # "Pre-Questions"=1 & "No PreQuestion"=0
+w <- datFrm$exposure # exposure1=0 & exposure2=1
+c <- rep(0,length(unique(datFrm$participant_id_factor))) # initialize a placeholder for courses
+for (s in 1:length(unique(datFrm$participant_id_factor))) {
+  c[s] <- unique(datFrm$course_id_factor[datFrm$participant_id_factor==s]) # populate courses, ordered by participant_id_factor
+}
+y <- datFrm$outcome_score
+n <- datFrm$points_possible
+nRowsData <- nrow(datFrm)
+nSubs <- length(unique(sub))
+nClasses <- length(unique(c))
+```
+
+```{r}
+#| label: create-brms-model
+#| include: false
+
+model <- brm(
+  formula = y | trials(n) ~ 1 + x + w + (1 + x + w | sub) + (1 + x + w | c),
+  family = binomial(link = "logit"),
+  data = datFrm,
+  prior = c(
+    prior(normal(0, 2), class = Intercept),
+    prior(normal(0, 2), class = b),  # Priors for fixed effects
+    prior(gamma(1.64, 0.32), class = sd),  # Priors for group-level standard deviations
+    prior(student_t(3, 0, 2), class = sigma)  # Prior for residual standard deviation
+  ),
+  chains = 4,
+  cores = 4,
+  iter = 2000,
+  warmup = 1000,
+  control = list(adapt_delta = 0.99)
+)
+```
+
+```{r}
+```

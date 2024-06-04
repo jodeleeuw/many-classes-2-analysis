@@ -35,99 +35,167 @@ load("data/analysis_set.Rdata")
 
 ```
 
+# Raw data visualization
 
 ```{r}
 #| label: Prepare data
 #| include: false
 
 overall_model_data <- datFrm %>%
-  select(participant_id, course_id, outcome_prequestions, points_possible_prequestions, outcome_control, points_possible_control, exposure_order) %>%
+  select(participant_id, course_id, outcome_prequestions, 
+         points_possible_prequestions, outcome_control, 
+         points_possible_control) %>%
   pivot_longer(cols = c(outcome_prequestions, outcome_control), 
                names_to = "outcome_phase", values_to = "score",
                names_prefix = "outcome_") %>%
-  pivot_longer(cols = c(points_possible_prequestions, points_possible_control), names_to = "trials_phase", values_to = "trials", names_prefix = "points_possible_") %>%
+  pivot_longer(cols = c(points_possible_prequestions, points_possible_control), 
+    names_to = "trials_phase", 
+    values_to = "trials", 
+    names_prefix = "points_possible_") %>%
   filter(outcome_phase == trials_phase) %>%
-  mutate(phase = outcome_phase) %>%
+  mutate(condition = outcome_phase) %>%
   select(-trials_phase, -outcome_phase)
 
 ```
 
 ```{r}
-#| label: Fit model
-#| include: false
+#| label: fig-raw-data
+#| echo: false
+#| fig-cap: The benefit of prequestions for each class, calculated as the proportion of correct responses in the prequestions condition minus the proportion of correct responses in the control condition. Dots are the mean and lines show +/- 1SE.
 
-fit_class <- brm(
-  formula = score | trials(trials) ~ phase + exposure_order + (1 + phase + exposure_order | course_id),
-  data = overall_model_data,
-  family = binomial(link = "logit"),
-  chains = 4,
-  iter = 2000,
-  warmup = 1000,
-  cores = 4
-)
+raw_data_summary <- overall_model_data %>%
+  mutate(proportion_correct = score / trials) %>%
+  pivot_wider(id_cols = c(participant_id, course_id), names_from=condition, values_from = proportion_correct) %>%
+  mutate(prequestion_benefit = prequestions - control) %>%
+  group_by(course_id) %>%
+  mutate(course_id = factor(course_id)) %>%
+  summarize(M = mean(prequestion_benefit), SD = sd(prequestion_benefit), SE = sd(prequestion_benefit) / sqrt(n()))
+
+raw_data_summary$course_id <- fct_reorder(raw_data_summary$course_id, raw_data_summary$M, median)
+
+
+ggplot(raw_data_summary, aes(x=M, y=course_id, xmin=M-SE, xmax=M+SE))+
+  geom_pointrange()+
+  theme_minimal()+
+  theme(panel.grid.major.y=element_blank())+
+  labs(x="Proption correct with prequestions - proportion correct without",
+       y="Class ID")
 ```
 
-```{r}
-#| label: Summarize model
-#| include: false
+# Overall Model
 
-summary(fit)
-```
+This model is `score | trials(trials) ~ condition + (1 + condition | course_id/participant_id)`. A fixed effect of condition (prequestions vs. control) and a random effect of condition by participant, nested in classes.
 
 ```{r}
 #| label: My own model version
 #| include: false
 
-fit <- brm(
-  formula = score | trials(trials) ~ phase + exposure_order + (1 + phase | course_id/participant_id) + (0 + exposure_order | course_id),
-  data = overall_model_data,
-  family = binomial(link = "logit"),
-  chains = 4,
-  iter = 2000,
-  warmup = 1000,
-  cores = 4
-)
+if(file.exists("fits/overall.rds")){
+  overall_fit <- readRDS("fits/overall.rds")
+} else {
+  overall_fit <- brm(
+    formula = score | trials(trials) ~ condition + (1 + condition | course_id/participant_id),
+    data = overall_model_data,
+    family = binomial(link = "logit"),
+    chains = 4,
+    iter = 2000,
+    warmup = 1000,
+    cores = 4
+  )
+  saveRDS(overall_fit, "fits/overall.rds")
+}
 ```
 
 ```{r}
-summary(fit)
-```
-
-
-```{r}
-#| label: Class-level forest plot of model estimates
-#| include: false
-
-# extract course_id coefficients from model fit
-
-get_variables(fit)
-
-```
-
-```{r}
-#| label: Course-level forest plot of model estimates
+#| label: fig-overall-forest-plot
 #| echo: false
+#| fig-cap: Model estimates of the benefit of prequestions for each class, shown as an odds ratio (probability of correct responses in prequestions / probability of correct responses in control). The circle is the median of the posterior, the thicker line is a 66% highest-density interval, and the thin line is a 95% highest-density interval. The diamond at the bottom shows the overall effect across classes.
 
-forest_plot_data <- fit %>%
-  spread_draws(b_Intercept, b_phaseprequestions, r_course_id[id, phase]) %>%
-  filter(phase %in% c("phaseprequestions", "Intercept")) %>%
-  pivot_wider(names_from = phase, values_from = r_course_id) %>%
-  mutate(id = factor(id), course_effect = phaseprequestions + b_phaseprequestions) %>%
-  mutate(prob = plogis(b_Intercept + Intercept + course_effect) - plogis(b_Intercept + Intercept))
+forest_plot_data <- overall_fit %>%
+  spread_draws(b_Intercept, b_conditionprequestions, r_course_id[id, condition]) %>%
+  filter(condition %in% c("conditionprequestions", "Intercept")) %>%
+  pivot_wider(names_from = condition, values_from = r_course_id) %>%
+  mutate(id = factor(id), 
+         course_effect = conditionprequestions + b_conditionprequestions,
+         odds = exp(course_effect)
+  )
+forest_plot_data$id <- fct_reorder(forest_plot_data$id, forest_plot_data$odds, median)
 
-forest_plot_data$id <- fct_reorder(forest_plot_data$id, forest_plot_data$prob, median)
-
-ggplot(forest_plot_data, aes(x = prob, y=id)) +
+overall_estimate_forest_plot <- forest_plot_data %>%
+  filter(id==98) %>%
+  mutate(odds = exp(b_conditionprequestions),
+         id=0)
+  
+ggplot(forest_plot_data, aes(x = odds, y=id)) +
   stat_pointinterval()+
-  labs(x="Improvement with pre-questions", y="Class")+
-  geom_vline(xintercept= 0.038)+
-  theme_minimal()
+  stat_pointinterval(data=overall_estimate_forest_plot, shape=18, point_size=5)+
+  labs(x="Odds ratio for correct response with pre-questions / without pre-questions ", y="Class ID")+
+  scale_x_continuous(breaks=seq(0.75, 2.5, 0.25))+
+  geom_vline(xintercept=1)+
+  theme_minimal()+
+  theme(panel.grid.major.y = element_blank())
   
 ```
 
+# Moderators
+
+## Exposure order
+
+Note taking for myself: the idea here is that there are different assignments in each class, and exposure order is basically which assignment people got. So wouldn't we expect 0 fixed effect, since there's no reason to expect the first assignments to be systematically different from the second assignments across classes? Should this be a random class-level effect?
+
 ```{r}
+#| label: Exposure order data
+#| include: false
+#| eval: false
+
+exposure_order_model_data <- datFrm %>%
+  select(participant_id, course_id, outcome_prequestions, 
+         points_possible_prequestions, outcome_control, 
+         points_possible_control, exposure_order) %>%
+  pivot_longer(cols = c(outcome_prequestions, outcome_control), 
+               names_to = "outcome_phase", values_to = "score",
+               names_prefix = "outcome_") %>%
+  pivot_longer(cols = c(points_possible_prequestions, points_possible_control), 
+    names_to = "trials_phase", 
+    values_to = "trials", 
+    names_prefix = "points_possible_") %>%
+  filter(outcome_phase == trials_phase) %>%
+  mutate(condition = outcome_phase) %>%
+  select(-trials_phase, -outcome_phase)
 
 ```
+
+```{r}
+#| label: Exposure order moderator
+#| include: false
+#| eval: false
+
+if(file.exists("fits/exposure_order.rds")){
+  exposure_fit <- readRDS("fitpais/exposure_order.rds")
+} else {
+  exposure_fit <- brm(
+    formula = score | trials(trials) ~ condition + (1 + condition | course_id/participant_id) + (0 + exposure_order | course_id),
+    data = exposure_order_model_data,
+    family = binomial(link = "logit"),
+    chains = 4,
+    iter = 2000,
+    warmup = 1000,
+    cores = 4,
+    control = list(adapt_delta = 0.99)
+  )
+  saveRDS(exposure_fit, "fits/exposure_order.rds")
+}
+```
+
+# notes / misc
+
+## ben questions
+
+-   priors for model?
+
+-   exposure order moderator
+
+-   moderators as main effects or interactions or both?
 
 Fit class-level moderators using the model above, replacing exposure_order with class-level moderator.
 
@@ -135,6 +203,4 @@ Use a different model for participant-level moderators.
 
 For assignment-level moderators, use assignment ID not nested in classes? Because there are only two assignments per class, nesting seems unhelpful. Instead allow for class-level intercept?
 
-Also fit a model where the outcome is whether/how much of the video they watch. Whether = > 5% of the video. Prediction is that prequestions will affect whether students watch the video.
-
-
+Also fit a model where the outcome is whether/how much of the video they watch. Whether = \> 5% of the video. Prediction is that prequestions will affect whether students watch the video.
