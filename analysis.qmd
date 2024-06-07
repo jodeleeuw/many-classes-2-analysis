@@ -187,6 +187,36 @@ if(file.exists("fits/exposure_order.rds")){
 }
 ```
 
+```{r}
+#| label: fig-overall-forest-plot-with-exposure-order
+#| echo: false
+#| fig-cap: Model estimates of the benefit of prequestions for each class, taking into account assignment-level effects, shown as an odds ratio (probability of correct responses in prequestions / probability of correct responses in control). The circle is the median of the posterior, the thicker line is a 66% highest-density interval, and the thin line is a 95% highest-density interval. The diamond at the bottom shows the overall effect across classes.
+
+forest_plot_data <- exposure_fit %>%
+  spread_draws(b_Intercept, b_conditionprequestions, r_course_id[id, condition]) %>%
+  filter(condition %in% c("conditionprequestions", "Intercept")) %>%
+  pivot_wider(names_from = condition, values_from = r_course_id) %>%
+  mutate(id = factor(id), 
+         course_effect = conditionprequestions + b_conditionprequestions,
+         odds = exp(course_effect)
+  )
+forest_plot_data$id <- fct_reorder(forest_plot_data$id, forest_plot_data$odds, median)
+
+overall_estimate_forest_plot <- forest_plot_data %>%
+  filter(id==98) %>%
+  mutate(odds = exp(b_conditionprequestions),
+         id=0)
+  
+ggplot(forest_plot_data, aes(x = odds, y=id)) +
+  stat_pointinterval()+
+  stat_pointinterval(data=overall_estimate_forest_plot, shape=18, point_size=5)+
+  labs(x="Odds ratio for correct response with pre-questions / without pre-questions ", y="Class ID")+
+  scale_x_continuous(breaks=seq(0.75, 2.5, 0.25))+
+  geom_vline(xintercept=1)+
+  theme_minimal()+
+  theme(panel.grid.major.y = element_blank())
+```
+
 # notes / misc
 
 ## ben questions
