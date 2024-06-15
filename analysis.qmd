@@ -84,7 +84,7 @@ ggplot(raw_data_summary, aes(x=M, y=course_id, xmin=M-SE, xmax=M+SE))+
 
 # Overall Model
 
-This model is `score | trials(trials) ~ condition + (1 + condition | course_id/participant_id)`. A fixed effect of condition (prequestions vs. control) and a random effect of condition by participant, nested in classes.
+This model is `score | trials(trials) ~ condition + (0 + condition | course_id) + (1 | course_id/participant_id)`. A fixed effect of condition (prequestions vs. control) and a random effect of condition per class, and random intercept of participant , nested in random intercept of class.
 
 ```{r}
 #| label: My own model version
@@ -94,13 +94,16 @@ if(file.exists("fits/overall.rds")){
   overall_fit <- readRDS("fits/overall.rds")
 } else {
   overall_fit <- brm(
-    formula = score | trials(trials) ~ condition + (1 + condition | course_id/participant_id),
+    formula = score | trials(trials) ~ condition + (0 + condition | course_id) + (1 | course_id/participant_id),
     data = overall_model_data,
     family = binomial(link = "logit"),
     chains = 4,
     iter = 2000,
     warmup = 1000,
-    cores = 4
+    cores = 4,
+    control=list(
+      adapt_delta=0.99
+    )
   )
   saveRDS(overall_fit, "fits/overall.rds")
 }
@@ -139,6 +142,13 @@ ggplot(forest_plot_data, aes(x = odds, y=id)) +
 
 # Moderators
 
+```{r}
+#| label: Load moderators
+#| include: false
+
+load('moderators.Rdata')
+```
+
 ## Exposure order
 
 Note taking for myself: the idea here is that there are different assignments in each class, and exposure order is basically which assignment people got. So wouldn't we expect 0 fixed effect, since there's no reason to expect the first assignments to be systematically different from the second assignments across classes? Should this be a random class-level effect?
@@ -146,7 +156,6 @@ Note taking for myself: the idea here is that there are different assignments in
 ```{r}
 #| label: Exposure order data
 #| include: false
-#| eval: false
 
 exposure_order_model_data <- datFrm %>%
   select(participant_id, course_id, outcome_prequestions, 
@@ -168,13 +177,12 @@ exposure_order_model_data <- datFrm %>%
 ```{r}
 #| label: Exposure order moderator
 #| include: false
-#| eval: false
 
 if(file.exists("fits/exposure_order.rds")){
-  exposure_fit <- readRDS("fitpais/exposure_order.rds")
+  exposure_fit <- readRDS("fits/exposure_order.rds")
 } else {
   exposure_fit <- brm(
-    formula = score | trials(trials) ~ condition + (1 + condition | course_id/participant_id) + (0 + exposure_order | course_id),
+    formula = score | trials(trials) ~ condition + (0 + condition + exposure_order | course_id) + (1 | course_id/participant_id),
     data = exposure_order_model_data,
     family = binomial(link = "logit"),
     chains = 4,
@@ -217,6 +225,638 @@ ggplot(forest_plot_data, aes(x = odds, y=id)) +
   theme(panel.grid.major.y = element_blank())
 ```
 
+## Class Level
+
+```{r}
+#| label: Merge class level moderators
+#| include: false
+
+class_level_model_data <- exposure_order_model_data %>%
+  left_join(mod_class, by=join_by(course_id))
+```
+
+### Number of Assignments
+
+```{r}
+#| label: Class-level number of assignments
+#| include: false
+
+if(file.exists("fits/class_level_number_assignments.rds")){
+  class_level_number_assignments_fit <- readRDS("fits/class_level_number_assignments.rds")
+} else {
+  class_level_number_assignments_fit <- brm(
+    formula = score | trials(trials) ~ condition*nbr_other_assessments + (1 | course_id/participant_id) + (0 + condition + exposure_order | course_id),
+    data = class_level_model_data,
+    family = binomial(link = "logit"),
+    chains = 4,
+    iter = 2000,
+    warmup = 1000,
+    cores = 4,
+    control = list(adapt_delta = 0.99)
+  )
+  saveRDS(class_level_number_assignments_fit, "fits/class_level_number_assignments.rds")
+}
+
+
+```
+
+```{r}
+#| echo: false
+fixef(class_level_number_assignments_fit)
+
+```
+
+## Student Level
+
+```{r}
+#| label: Create student-level model data
+#| include: false
+
+student_level_model_data <- exposure_order_model_data %>%
+  left_join(mod_student, by=join_by(participant_id, course_id)) %>%
+  mutate(pretest = pretest / 100)
+
+```
+
+### Grade Level
+
+Question about this one: we can't nest this in classes, right? Because there are classes with all one grade level? And we're more interested in how this behaves at the class level?
+
+```{r}
+#| label: student-level grade level moderator
+#| include: false
+
+if(file.exists("fits/student_level_grade_level.rds")){
+  student_level_grade_level_fit <- readRDS("fits/student_level_grade_level.rds")
+} else {
+  student_level_grade_level_fit <- brm(
+    formula = score | trials(trials) ~ condition*level + (1 | course_id/participant_id) + (0 + exposure_order + condition | course_id),
+    data = student_level_model_data,
+    family = binomial(link = "logit"),
+    chains = 4,
+    iter = 2000,
+    warmup = 1000,
+    cores = 4,
+    control = list(adapt_delta = 0.99)
+  )
+  saveRDS(student_level_grade_level_fit, "fits/student_level_grade_level.rds")
+}
+
+
+```
+
+```{r}
+#| echo: false
+fixef(student_level_grade_level_fit)
+```
+
+### Pretest
+
+*Note*: We get a warning that NAs are excluded.
+
+```{r}
+#| label: student-level pretest moderator
+#| include: false
+
+if(file.exists("fits/student_level_pretest.rds")){
+  student_level_pretest_fit <- readRDS("fits/student_level_pretest.rds")
+} else {
+  student_level_pretest_fit <- brm(
+    formula = score | trials(trials) ~ condition*pretest + (1 | course_id/participant_id) + (0 + exposure_order + condition*pretest | course_id),
+    data = student_level_model_data,
+    family = binomial(link = "logit"),
+    chains = 4,
+    iter = 5000,
+    warmup = 1000,
+    cores = 4,
+    control = list(adapt_delta = 0.99)
+  )
+  saveRDS(student_level_pretest_fit, "fits/student_level_pretest.rds")
+}
+```
+
+```{r}
+#| echo: false
+fixef(student_level_pretest_fit)
+```
+
+Plot the student-level prequestion effect by student-level pretest
+
+```{r}
+#| label: fig-pretest-by-condition
+#| fig-height: 7
+#| fig-width: 5
+#| echo: false
+
+pretest_prequestion_plot_data <- student_level_model_data %>%
+  select(participant_id, course_id, score, trials, condition, pretest) %>%
+  mutate(proportion_correct = score / trials) %>%
+  select(-score, -trials) %>%
+  pivot_wider(id_cols = c(participant_id, course_id, pretest), names_from=condition, values_from=proportion_correct) %>%
+  mutate(prequestion_benefit = prequestions - control)
+
+ggplot(pretest_prequestion_plot_data, aes(x=pretest, y=prequestion_benefit))+
+  geom_point()+
+  geom_hline(yintercept=0)+
+  geom_smooth(method="lm")+
+  facet_wrap(.~course_id) +
+  theme_minimal()
+```
+
+### In Major
+
+```{r}
+#| label: student-level in major moderator
+#| include: false
+
+if(file.exists("fits/student_level_major.rds")){
+  student_level_major_fit <- readRDS("fits/student_level_major.rds")
+} else {
+  student_level_major_fit <- brm(
+    formula = score | trials(trials) ~ condition*in_major + (1 | course_id/participant_id) + (0 + exposure_order + in_major*condition | course_id),
+    data = student_level_model_data,
+    family = binomial(link = "logit"),
+    chains = 4,
+    iter = 2000,
+    warmup = 1000,
+    cores = 4,
+    control = list(adapt_delta = 0.99)
+  )
+  saveRDS(student_level_major_fit, "fits/student_level_major.rds")
+}
+```
+
+```{r}
+#| echo: false
+fixef(student_level_major_fit)
+```
+
+### Prequestion Score
+
+*Question: what does it mean to get prequestion score in control condition*
+
+```{r}
+#| label: student-level prequestion score moderator
+#| include: false
+
+if(file.exists("fits/student_level_prequestion_score.rds")){
+  student_level_prequestion_score_fit <- readRDS("fits/student_level_prequestion_score.rds")
+} else {
+  student_level_prequestion_score_fit <- brm(
+    formula = score | trials(trials) ~ condition*prequestion_score + (1 | course_id/participant_id) + (0 + exposure_order + prequestion_score*condition | course_id),
+    data = student_level_model_data,
+    family = binomial(link = "logit"),
+    chains = 4,
+    iter = 2000,
+    warmup = 1000,
+    cores = 4,
+    control = list(adapt_delta = 0.99)
+  )
+  saveRDS(student_level_prequestion_score_fit, "fits/student_level_prequestion_score.rds")
+}
+```
+
+```{r}
+#| echo: false
+fixef(student_level_prequestion_score_fit)
+```
+
+## Submission Level
+
+```{r}
+#| label: Create submission-level data
+#| include: false
+
+submission_level_model_data <- exposure_order_model_data %>%
+  left_join(mod_submission, by=join_by(participant_id, course_id, condition))
+
+```
+
+### Percentage of video viewed
+
+```{r}
+#| label: submission-level percentage of video video
+#| include: false
+
+if(file.exists("fits/submission_level_percent_viewed.rds")){
+  submission_level_percent_viewed_fit <- readRDS("fits/submission_level_percent_viewed.rds")
+} else {
+  submission_level_percent_viewed_fit <- brm(
+    formula = score | trials(trials) ~ condition*viewpct + (1 | course_id/participant_id) + (0 + exposure_order + viewpct*condition | course_id),
+    data = submission_level_model_data,
+    family = binomial(link = "logit"),
+    chains = 4,
+    iter = 2000,
+    warmup = 1000,
+    cores = 4,
+    control = list(adapt_delta = 0.99)
+  )
+  saveRDS(submission_level_percent_viewed_fit, "fits/submission_level_percent_viewed.rds")
+}
+```
+
+```{r}
+#| echo: false
+fixef(submission_level_percent_viewed_fit)
+```
+
+### Did the student start the video at all?
+
+```{r}
+#| label: submission-level initiate playback
+#| include: false
+
+if(file.exists("fits/submission_level_initiate_playback.rds")){
+  submission_level_initiate_playback_fit <- readRDS("fits/submission_level_initiate_playback.rds")
+} else {
+  submission_level_initiate_playback_fit <- brm(
+    formula = score | trials(trials) ~ condition*initiate_playback + (1 | course_id/participant_id) + (0 + exposure_order + initiate_playback*condition | course_id),
+    data = submission_level_model_data,
+    family = binomial(link = "logit"),
+    chains = 4,
+    iter = 2000,
+    warmup = 1000,
+    cores = 4,
+    control = list(adapt_delta = 0.99)
+  )
+  saveRDS(submission_level_initiate_playback_fit, "fits/submission_level_initiate_playback.rds")
+}
+```
+
+```{r}
+#| echo: false
+fixef(submission_level_initiate_playback_fit)
+```
+
+### N Events (clicks?)
+
+```{r}
+#| label: submission-level number of events
+#| include: false
+
+if(file.exists("fits/submission_level_n_events.rds")){
+  submission_level_n_events_fit <- readRDS("fits/submission_level_n_events.rds")
+} else {
+  submission_level_n_events_fit <- brm(
+    formula = score | trials(trials) ~ condition*nevents + (1 | course_id/participant_id) + (0 + exposure_order + nevents*condition | course_id),
+    data = submission_level_model_data,
+    family = binomial(link = "logit"),
+    chains = 4,
+    iter = 2000,
+    warmup = 1000,
+    cores = 4,
+    control = list(adapt_delta = 0.99)
+  )
+  saveRDS(submission_level_n_events_fit, "fits/submission_level_n_events.rds")
+}
+```
+
+```{r}
+#| echo: false
+fixef(submission_level_n_events_fit)
+```
+
+### Duration
+
+```{r}
+#| label: submission-level duration
+#| include: false
+
+if(file.exists("fits/submission_level_duration.rds")){
+  submission_level_duration_fit <- readRDS("fits/submission_level_duration.rds")
+} else {
+  submission_level_duration_fit <- brm(
+    formula = score | trials(trials) ~ condition*duration + (1 | course_id/participant_id) + (0 + exposure_order + duration*condition | course_id),
+    data = submission_level_model_data,
+    family = binomial(link = "logit"),
+    chains = 4,
+    iter = 2000,
+    warmup = 1000,
+    cores = 4,
+    control = list(adapt_delta = 0.99)
+  )
+  saveRDS(submission_level_duration_fit, "fits/submission_level_duration.rds")
+}
+```
+
+This model won't run.
+
+```{r}
+#| echo: false
+#| eval: false
+fixef(submission_level_duration_fit)
+```
+
+### Submission time
+
+```{r}
+#| label: submission-level time
+#| include: false
+
+if(file.exists("fits/submission_level_time.rds")){
+  submission_level_time_fit <- readRDS("fits/submission_level_time.rds")
+} else {
+  submission_level_time_fit <- brm(
+    formula = score | trials(trials) ~ condition*submDaysBeforeDueDate + (1 | course_id/participant_id) + (0 + exposure_order + submDaysBeforeDueDate*condition | course_id),
+    data = submission_level_model_data,
+    family = binomial(link = "logit"),
+    chains = 4,
+    iter = 2000,
+    warmup = 1000,
+    cores = 4,
+    control = list(adapt_delta = 0.99)
+  )
+  saveRDS(submission_level_time_fit, "fits/submission_level_time.rds")
+}
+```
+
+```{r}
+#| echo: false
+fixef(submission_level_time_fit)
+```
+
+## Exposure Level
+
+```{r}
+#| label: Create exposure-level data
+#| include: false
+
+exposure_level_model_data <- exposure_order_model_data %>%
+  mutate(exposure = case_when(
+    exposure_order == 'control_then_prequestion' & condition == 'control' ~ 1,
+    exposure_order == 'control_then_prequestion' & condition == 'prequestions' ~ 2,
+    exposure_order == 'prequestions_then_control' & condition == 'control' ~ 2,
+    exposure_order == 'prequestions_then_control' & condition == 'prequestions' ~ 1,
+  )) %>%
+  left_join(mod_exposure, by=join_by(course_id, exposure)) 
+```
+
+Current thinking about model structure: we don't have enough different exposures in each class to get class-level estimates of the exposure-level moderators. I'm including intercepts for courses and participants, as well as exposure-level slopes are condition effects within classes. The moderator is then estimated only at the population level. Theoretically I think we'd expect these to vary across classes or even across individuals, but I don't think we have the data to fit that kind of model.
+
+### delay: days between assignment due date and exam date
+
+```{r}
+#| label: exposure-level delay
+#| include: false
+
+if(file.exists("fits/exposure_level_delay.rds")){
+  exposure_level_delay_fit <- readRDS("fits/exposure_level_delay.rds")
+} else {
+  exposure_level_delay_fit <- brm(
+    formula = score | trials(trials) ~ condition*delay + (1 | course_id/participant_id) + (0 + exposure + condition | course_id),
+    data = exposure_level_model_data,
+    family = binomial(link = "logit"),
+    chains = 4,
+    iter = 2000,
+    warmup = 1000,
+    cores = 4,
+    control = list(adapt_delta = 0.99)
+  )
+  saveRDS(exposure_level_delay_fit, "fits/exposure_level_delay.rds")
+}
+```
+
+```{r}
+#| echo: false
+fixef(exposure_level_delay_fit)
+```
+
+### pct_correct: overall percent correct on the exam items
+
+```{r}
+#| label: exposure-level percent correct
+#| include: false
+
+if(file.exists("fits/exposure_level_pct_correct.rds")){
+  exposure_level_pct_correct_fit <- readRDS("fits/exposure_level_pct_correct.rds")
+} else {
+  exposure_level_pct_correct_fit <- brm(
+    formula = score | trials(trials) ~ condition*pct_correct + (1 | course_id/participant_id) + (0 + exposure + condition | course_id),
+    data = exposure_level_model_data,
+    family = binomial(link = "logit"),
+    chains = 4,
+    iter = 2000,
+    warmup = 1000,
+    cores = 4,
+    control = list(adapt_delta = 0.99)
+  )
+  saveRDS(exposure_level_pct_correct_fit, "fits/exposure_level_pct_correct.rds")
+}
+```
+
+```{r}
+#| label: exposure-level pct_correct fixed effects
+#| echo: false
+
+fixef(exposure_level_pct_correct_fit)
+```
+
+### submDaysBeforeDueDate: Number of days before the due date that the assignment was first completed
+
+*Can't find this one?*
+
+```{r}
+#| label: exposure-level submission date
+#| include: false
+#| eval: false
+
+if(file.exists("fits/exposure_level_submDaysBeforeDueDate.rds")){
+  exposure_level_submDaysBeforeDueDate_fit <- readRDS("fits/exposure_level_submDaysBeforeDueDate.rds")
+} else {
+  exposure_level_submDaysBeforeDueDate_fit <- brm(
+    formula = score | trials(trials) ~ condition*submDaysBeforeDueDate + (1 | course_id/participant_id) + (0 + exposure + condition | course_id),
+    data = exposure_level_model_data,
+    family = binomial(link = "logit"),
+    chains = 4,
+    iter = 2000,
+    warmup = 1000,
+    cores = 4,
+    control = list(adapt_delta = 0.99)
+  )
+  saveRDS(exposure_level_submDaysBeforeDueDate_fit, "fits/exposure_level_submDaysBeforeDueDate.rds")
+}
+```
+
+### video_length: total duration of video
+
+```{r}
+#| label: exposure-level video length
+#| include: false
+
+if(file.exists("fits/exposure_level_video_length.rds")){
+  exposure_level_video_length_fit <- readRDS("fits/exposure_level_video_length.rds")
+} else {
+  exposure_level_video_length_fit <- brm(
+    formula = score | trials(trials) ~ condition*video_length + (1 | course_id/participant_id) + (0 + exposure + condition | course_id),
+    data = exposure_level_model_data,
+    family = binomial(link = "logit"),
+    chains = 4,
+    iter = 2000,
+    warmup = 1000,
+    cores = 4,
+    control = list(adapt_delta = 0.99)
+  )
+  saveRDS(exposure_level_video_length_fit, "fits/exposure_level_video_length.rds")
+}
+```
+
+```{r}
+#| label: exposure-level video_length fixed effects
+#| echo: false
+
+fixef(exposure_level_video_length_fit)
+```
+
+### avg_time_of_prequestions: avg percent of the video elapsed when prequestions are addressed
+
+```{r}
+#| label: exposure-level time of prequestions
+#| include: false
+
+if(file.exists("fits/exposure_level_avg_time_of_prequestions.rds")){
+  exposure_level_avg_time_of_prequestions_fit <- readRDS("fits/exposure_level_avg_time_of_prequestions.rds")
+} else {
+  exposure_level_avg_time_of_prequestions_fit <- brm(
+    formula = score | trials(trials) ~ condition*avg_time_of_prequestions + (1 | course_id/participant_id) + (0 + exposure + condition | course_id),
+    data = exposure_level_model_data,
+    family = binomial(link = "logit"),
+    chains = 4,
+    iter = 2000,
+    warmup = 1000,
+    cores = 4,
+    control = list(adapt_delta = 0.99)
+  )
+  saveRDS(exposure_level_avg_time_of_prequestions_fit, "fits/exposure_level_avg_time_of_prequestions.rds")
+}
+```
+
+```{r}
+#| label: exposure-level avg_time_of_prequestions fixed effects
+#| echo: false
+
+fixef(exposure_level_avg_time_of_prequestions_fit)
+```
+
+### time_answering_preqs: cumulative time spent addressing prequestions in video
+
+```{r}
+#| label: exposure-level time addressing prequestions
+#| include: false
+
+if(file.exists("fits/exposure_level_time_answering_preqs.rds")){
+  exposure_level_time_answering_preqs_fit <- readRDS("fits/exposure_level_time_answering_preqs.rds")
+} else {
+  exposure_level_time_answering_preqs_fit <- brm(
+    formula = score | trials(trials) ~ condition*time_answering_preqs + (1 | course_id/participant_id) + (0 + exposure + condition | course_id),
+    data = exposure_level_model_data,
+    family = binomial(link = "logit"),
+    chains = 4,
+    iter = 2000,
+    warmup = 1000,
+    cores = 4,
+    control = list(adapt_delta = 0.99)
+  )
+  saveRDS(exposure_level_time_answering_preqs_fit, "fits/exposure_level_time_answering_preqs.rds")
+}
+```
+
+```{r}
+#| label: exposure-level time answering fixed effects
+#| echo: false
+
+fixef(exposure_level_time_answering_preqs_fit)
+```
+
+### answer_not_provided: was there at least one prequestion where the answer was never presented (learner needed to infer answer)
+
+```{r}
+#| label: exposure-level answer not provided
+#| include: false
+
+if(file.exists("fits/exposure_level_answer_not_provided.rds")){
+  exposure_level_answer_not_provided_fit <- readRDS("fits/exposure_level_answer_not_provided.rds")
+} else {
+  exposure_level_answer_not_provided_fit <- brm(
+    formula = score | trials(trials) ~ condition*answer_not_provided + (1 | course_id/participant_id) + (0 + exposure + condition | course_id),
+    data = exposure_level_model_data,
+    family = binomial(link = "logit"),
+    chains = 4,
+    iter = 2000,
+    warmup = 1000,
+    cores = 4,
+    control = list(adapt_delta = 0.99)
+  )
+  saveRDS(exposure_level_answer_not_provided_fit, "fits/exposure_level_answer_not_provided.rds")
+}
+```
+
+```{r}
+#| label: exposure-level answer not provided fixed effects
+#| echo: false
+
+fixef(exposure_level_answer_not_provided_fit)
+```
+
+### require_memorization: Does any prequestion involve memorization of a word/term/phrase?
+
+```{r}
+#| label: exposure-level require memorization
+#| include: false
+
+if(file.exists("fits/exposure_level_require_memorization.rds")){
+  exposure_level_require_memorization_fit <- readRDS("fits/exposure_level_require_memorization.rds")
+} else {
+  exposure_level_require_memorization_fit <- brm(
+    formula = score | trials(trials) ~ condition*require_memorization + (1 | course_id/participant_id) + (0 + exposure + condition | course_id),
+    data = exposure_level_model_data,
+    family = binomial(link = "logit"),
+    chains = 4,
+    iter = 2000,
+    warmup = 1000,
+    cores = 4,
+    control = list(adapt_delta = 0.99)
+  )
+  saveRDS(exposure_level_require_memorization_fit, "fits/exposure_level_require_memorization.rds")
+}
+```
+
+```{r}
+#| label: exposure-level require memorization fixed effects
+#| echo: false
+
+fixef(exposure_level_require_memorization_fit)
+```
+
+### preq_difficulty: percent correct (overall) on the prequestions associated with the video
+
+```{r}
+#| label: exposure-level prequestion difficulty
+#| include: false
+
+if(file.exists("fits/exposure_level_preq_difficulty.rds")){
+  exposure_level_preq_difficulty_fit <- readRDS("fits/exposure_level_preq_difficulty.rds")
+} else {
+  exposure_level_preq_difficulty_fit <- brm(
+    formula = score | trials(trials) ~ condition*preq_difficulty + (1 | course_id/participant_id) + (0 + exposure + condition | course_id),
+    data = exposure_level_model_data,
+    family = binomial(link = "logit"),
+    chains = 4,
+    iter = 2000,
+    warmup = 1000,
+    cores = 4,
+    control = list(adapt_delta = 0.99)
+  )
+  saveRDS(exposure_level_preq_difficulty_fit, "fits/exposure_level_preq_difficulty.rds")
+}
+```
+
+```{r}
+#| label: exposure-level prequestion difficulty fixed effects
+#| echo: false
+
+fixef(exposure_level_preq_difficulty_fit)
+```
+
 # notes / misc
 
 ## ben questions
@@ -234,3 +874,23 @@ Use a different model for participant-level moderators.
 For assignment-level moderators, use assignment ID not nested in classes? Because there are only two assignments per class, nesting seems unhelpful. Instead allow for class-level intercept?
 
 Also fit a model where the outcome is whether/how much of the video they watch. Whether = \> 5% of the video. Prediction is that prequestions will affect whether students watch the video.
+
+------------------------------------------------------------------------
+
+I also wrote a script to organize everything.  As you know, I've felt uncomfortable with the piss poor documentation I provided about the ManyClasses2 moderators.  So here (attached, and also in the ManyClasses 2 folder in Dropbox), you'll find a script that grabs everything from OSF and organizes it into four different data frames:
+
+-   **mod_class**: Moderators at the class-level (30 obs) - key is course_id
+
+-   **mod_exposure**: Moderators at the exposure-level (60 obs; exposures are analogous to but distinct from "periods" in a repeated-measures design; in any case, here there are two "exposures" per class in this study) - keys are course_id + exposure
+
+-   **mod_student**: Moderators at the student-level (1571 obs) - key is participant_id
+
+-   **mod_submission**: Moderators at the level of each student's interactions with a treatment (3142 obs; two observations per student, one for each exposure)
+
+I hope this makes moderator analyses super-easy! 
+
+Note: Right now we only have one moderator at the class-level (the number of other graded assessments in the course).  Obviously we could also do analyses on consent rate, enrollment, semester, institution, etc...  But these are atheoretical, and we already understand class-level moderators to be underpowered, so I've not added them.  If you think I should add 'em to mod_class, just let me know.
+
+Appreciatively,
+
+Ben

@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.3.450">
+<meta name="generator" content="quarto-1.4.553">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -58,16 +58,22 @@ ul.task-list li input[type="checkbox"] {
   </div>
   
 
+
 </header>
+
 
 <section id="raw-data-visualization" class="level1">
 <h1>Raw data visualization</h1>
 <div class="cell">
 <div class="cell-output-display">
-<div id="fig-raw-data" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure">
-<p><img src="analysis_files/figure-html/fig-raw-data-1.png" class="img-fluid figure-img" width="672"></p>
-<figcaption class="figure-caption">Figure&nbsp;1: The benefit of prequestions for each class, calculated as the proportion of correct responses in the prequestions condition minus the proportion of correct responses in the control condition. Dots are the mean and lines show +/- 1SE.</figcaption>
+<div id="fig-raw-data" class="quarto-figure quarto-figure-center quarto-float anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-raw-data-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="analysis_files/figure-html/fig-raw-data-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-raw-data-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: The benefit of prequestions for each class, calculated as the proportion of correct responses in the prequestions condition minus the proportion of correct responses in the control condition. Dots are the mean and lines show +/- 1SE.
+</figcaption>
 </figure>
 </div>
 </div>
@@ -75,13 +81,17 @@ ul.task-list li input[type="checkbox"] {
 </section>
 <section id="overall-model" class="level1">
 <h1>Overall Model</h1>
-<p>This model is <code>score | trials(trials) ~ condition + (1 + condition | course_id/participant_id)</code>. A fixed effect of condition (prequestions vs.&nbsp;control) and a random effect of condition by participant, nested in classes.</p>
+<p>This model is <code>score | trials(trials) ~ condition + (0 + condition | course_id) + (1 | course_id/participant_id)</code>. A fixed effect of condition (prequestions vs.&nbsp;control) and a random effect of condition per class, and random intercept of participant , nested in random intercept of class.</p>
 <div class="cell">
 <div class="cell-output-display">
-<div id="fig-overall-forest-plot" class="quarto-figure quarto-figure-center anchored">
-<figure class="figure">
-<p><img src="analysis_files/figure-html/fig-overall-forest-plot-1.png" class="img-fluid figure-img" width="672"></p>
-<figcaption class="figure-caption">Figure&nbsp;2: Model estimates of the benefit of prequestions for each class, shown as an odds ratio (probability of correct responses in prequestions / probability of correct responses in control). The circle is the median of the posterior, the thicker line is a 66% highest-density interval, and the thin line is a 95% highest-density interval. The diamond at the bottom shows the overall effect across classes.</figcaption>
+<div id="fig-overall-forest-plot" class="quarto-figure quarto-figure-center quarto-float anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-overall-forest-plot-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="analysis_files/figure-html/fig-overall-forest-plot-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-overall-forest-plot-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2: Model estimates of the benefit of prequestions for each class, shown as an odds ratio (probability of correct responses in prequestions / probability of correct responses in control). The circle is the median of the posterior, the thicker line is a 66% highest-density interval, and the thin line is a 95% highest-density interval. The diamond at the bottom shows the overall effect across classes.
+</figcaption>
 </figure>
 </div>
 </div>
@@ -92,6 +102,324 @@ ul.task-list li input[type="checkbox"] {
 <section id="exposure-order" class="level2">
 <h2 class="anchored" data-anchor-id="exposure-order">Exposure order</h2>
 <p>Note taking for myself: the idea here is that there are different assignments in each class, and exposure order is basically which assignment people got. So wouldn’t we expect 0 fixed effect, since there’s no reason to expect the first assignments to be systematically different from the second assignments across classes? Should this be a random class-level effect?</p>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-overall-forest-plot-with-exposure-order" class="quarto-figure quarto-figure-center quarto-float anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-overall-forest-plot-with-exposure-order-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="analysis_files/figure-html/fig-overall-forest-plot-with-exposure-order-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-overall-forest-plot-with-exposure-order-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3: Model estimates of the benefit of prequestions for each class, taking into account assignment-level effects, shown as an odds ratio (probability of correct responses in prequestions / probability of correct responses in control). The circle is the median of the posterior, the thicker line is a 66% highest-density interval, and the thin line is a 95% highest-density interval. The diamond at the bottom shows the overall effect across classes.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="class-level" class="level2">
+<h2 class="anchored" data-anchor-id="class-level">Class Level</h2>
+<section id="number-of-assignments" class="level3">
+<h3 class="anchored" data-anchor-id="number-of-assignments">Number of Assignments</h3>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>                                                Estimate   Est.Error
+Intercept                                    1.138706685 0.254626851
+conditionprequestions                        0.265771789 0.101591799
+nbr_other_assessments                       -0.002586230 0.010345856
+conditionprequestions:nbr_other_assessments -0.001300227 0.003512777
+                                                    Q2.5       Q97.5
+Intercept                                    0.642557931 1.639667153
+conditionprequestions                        0.077080285 0.474789012
+nbr_other_assessments                       -0.022244302 0.018455579
+conditionprequestions:nbr_other_assessments -0.007817892 0.006104962</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="student-level" class="level2">
+<h2 class="anchored" data-anchor-id="student-level">Student Level</h2>
+<section id="grade-level" class="level3">
+<h3 class="anchored" data-anchor-id="grade-level">Grade Level</h3>
+<p>Question about this one: we can’t nest this in classes, right? Because there are classes with all one grade level? And we’re more interested in how this behaves at the class level?</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>                              Estimate  Est.Error        Q2.5      Q97.5
+Intercept                   0.56710559 0.58613231 -0.58634937 1.68567082
+conditionprequestions       0.06800658 0.29917245 -0.52398144 0.67313982
+level                       0.04359620 0.04321148 -0.03858993 0.12791178
+conditionprequestions:level 0.01210446 0.02242373 -0.03120560 0.05849032</code></pre>
+</div>
+</div>
+</section>
+<section id="pretest" class="level3">
+<h3 class="anchored" data-anchor-id="pretest">Pretest</h3>
+<p><em>Note</em>: We get a warning that NAs are excluded.</p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>                                 Estimate Est.Error       Q2.5      Q97.5
+Intercept                     -1.14267334 0.4616147 -2.0896466 -0.2638754
+conditionprequestions         -0.09147072 0.2753749 -0.6376390  0.4428374
+pretest                        2.54066635 0.4589428  1.6810986  3.4808578
+conditionprequestions:pretest  0.38163862 0.3128153 -0.2144405  1.0011360</code></pre>
+</div>
+</div>
+<p>Plot the student-level prequestion effect by student-level pretest</p>
+<div class="cell">
+<div class="cell-output cell-output-stderr">
+<pre><code>`geom_smooth()` using formula = 'y ~ x'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Removed 5 rows containing non-finite outside the scale range
+(`stat_smooth()`).</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: Removed 5 rows containing missing values or values outside the scale range
+(`geom_point()`).</code></pre>
+</div>
+<div class="cell-output-display">
+<div id="fig-pretest-by-condition" class="quarto-figure quarto-figure-center quarto-float anchored" width="480">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-pretest-by-condition-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="analysis_files/figure-html/fig-pretest-by-condition-1.png" id="fig-pretest-by-condition" class="img-fluid figure-img" width="480">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig quarto-uncaptioned" id="fig-pretest-by-condition-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;4
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="in-major" class="level3">
+<h3 class="anchored" data-anchor-id="in-major">In Major</h3>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>                                 Estimate  Est.Error        Q2.5     Q97.5
+Intercept                      1.05983145 0.20948315  0.64765404 1.4686427
+conditionprequestions          0.20811816 0.09319701  0.04078662 0.4093480
+in_major                       0.11579498 0.16686590 -0.21799814 0.4386215
+conditionprequestions:in_major 0.06622255 0.14257762 -0.20263712 0.3580761</code></pre>
+</div>
+</div>
+</section>
+<section id="prequestion-score" class="level3">
+<h3 class="anchored" data-anchor-id="prequestion-score">Prequestion Score</h3>
+<p><em>Question: what does it mean to get prequestion score in control condition</em></p>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>                                          Estimate Est.Error       Q2.5
+Intercept                                0.9272632 0.2090636  0.5205645
+conditionprequestions                   -0.2030010 0.1077540 -0.4014074
+prequestion_score                        0.2850007 0.2003186 -0.1215907
+conditionprequestions:prequestion_score  0.9033898 0.1765628  0.5589993
+                                             Q97.5
+Intercept                               1.34218695
+conditionprequestions                   0.01581708
+prequestion_score                       0.66658043
+conditionprequestions:prequestion_score 1.25695766</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="submission-level" class="level2">
+<h2 class="anchored" data-anchor-id="submission-level">Submission Level</h2>
+<section id="percentage-of-video-viewed" class="level3">
+<h3 class="anchored" data-anchor-id="percentage-of-video-viewed">Percentage of video viewed</h3>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>                                Estimate Est.Error        Q2.5     Q97.5
+Intercept                     0.90031462 0.1986240  0.50763041 1.2832993
+conditionprequestions         0.22155470 0.1041605  0.02953640 0.4389090
+viewpct                       0.30757544 0.1246368  0.06670658 0.5572133
+conditionprequestions:viewpct 0.03159017 0.1258317 -0.20931649 0.2869207</code></pre>
+</div>
+</div>
+</section>
+<section id="did-the-student-start-the-video-at-all" class="level3">
+<h3 class="anchored" data-anchor-id="did-the-student-start-the-video-at-all">Did the student start the video at all?</h3>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>                                         Estimate Est.Error       Q2.5
+Intercept                               0.9686228 0.2095973  0.5599368
+conditionprequestions                   0.1338766 0.1234850 -0.1020641
+initiate_playback                       0.1650970 0.1448756 -0.1254721
+conditionprequestions:initiate_playback 0.1525935 0.1470207 -0.1277152
+                                            Q97.5
+Intercept                               1.3836058
+conditionprequestions                   0.3856911
+initiate_playback                       0.4492441
+conditionprequestions:initiate_playback 0.4416383</code></pre>
+</div>
+</div>
+</section>
+<section id="n-events-clicks" class="level3">
+<h3 class="anchored" data-anchor-id="n-events-clicks">N Events (clicks?)</h3>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>                                  Estimate   Est.Error        Q2.5      Q97.5
+Intercept                      0.885500514 0.190797030  0.51434510 1.26220129
+conditionprequestions          0.294698159 0.111393457  0.09305392 0.52739623
+nevents                        0.022996581 0.006799869  0.01040456 0.03738852
+conditionprequestions:nevents -0.001029318 0.008220684 -0.01690803 0.01575314</code></pre>
+</div>
+</div>
+</section>
+<section id="duration" class="level3">
+<h3 class="anchored" data-anchor-id="duration">Duration</h3>
+<p>This model won’t run.</p>
+</section>
+<section id="submission-time" class="level3">
+<h3 class="anchored" data-anchor-id="submission-time">Submission time</h3>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>                                               Estimate  Est.Error
+Intercept                                    1.13131817 0.20325563
+conditionprequestions                        0.17371145 0.09338948
+submDaysBeforeDueDate                       -0.01529796 0.03309903
+conditionprequestions:submDaysBeforeDueDate  0.03293765 0.02998388
+                                                     Q2.5      Q97.5
+Intercept                                    0.7337528365 1.53404384
+conditionprequestions                        0.0001490634 0.37213236
+submDaysBeforeDueDate                       -0.0830773079 0.04858057
+conditionprequestions:submDaysBeforeDueDate -0.0204887743 0.09837408</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="exposure-level" class="level2">
+<h2 class="anchored" data-anchor-id="exposure-level">Exposure Level</h2>
+<p>Current thinking about model structure: we don’t have enough different exposures in each class to get class-level estimates of the exposure-level moderators. I’m including intercepts for courses and participants, as well as exposure-level slopes are condition effects within classes. The moderator is then estimated only at the population level. Theoretically I think we’d expect these to vary across classes or even across individuals, but I don’t think we have the data to fit that kind of model.</p>
+<section id="delay-days-between-assignment-due-date-and-exam-date" class="level3">
+<h3 class="anchored" data-anchor-id="delay-days-between-assignment-due-date-and-exam-date">delay: days between assignment due date and exam date</h3>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>                               Estimate   Est.Error        Q2.5      Q97.5
+Intercept                   1.053860387 0.259866772  0.55869352 1.57076772
+conditionprequestions       0.134899722 0.116782753 -0.08225814 0.38055361
+delay                       0.007776949 0.015392246 -0.02219653 0.03830752
+conditionprequestions:delay 0.011144282 0.008252656 -0.00540479 0.02706361</code></pre>
+</div>
+</div>
+</section>
+<section id="pct_correct-overall-percent-correct-on-the-exam-items" class="level3">
+<h3 class="anchored" data-anchor-id="pct_correct-overall-percent-correct-on-the-exam-items">pct_correct: overall percent correct on the exam items</h3>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>                                     Estimate Est.Error       Q2.5      Q97.5
+Intercept                         -3.21109880 0.2070404 -3.6231295 -2.8026960
+conditionprequestions              0.21772559 0.2754758 -0.3088558  0.7895353
+pct_correct                        6.11926114 0.2934307  5.5483412  6.7009616
+conditionprequestions:pct_correct  0.02439812 0.3911912 -0.7822728  0.7747773</code></pre>
+</div>
+</div>
+</section>
+<section id="submdaysbeforeduedate-number-of-days-before-the-due-date-that-the-assignment-was-first-completed" class="level3">
+<h3 class="anchored" data-anchor-id="submdaysbeforeduedate-number-of-days-before-the-due-date-that-the-assignment-was-first-completed">submDaysBeforeDueDate: Number of days before the due date that the assignment was first completed</h3>
+<p><em>Can’t find this one?</em></p>
+</section>
+<section id="video_length-total-duration-of-video" class="level3">
+<h3 class="anchored" data-anchor-id="video_length-total-duration-of-video">video_length: total duration of video</h3>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>                                        Estimate   Est.Error         Q2.5
+Intercept                           1.2407995823 0.936463415 -0.570704939
+conditionprequestions               0.5096949153 0.477501549 -0.393603214
+video_length                       -0.0004311682 0.003371330 -0.007120887
+conditionprequestions:video_length -0.0009230310 0.001696703 -0.004420019
+                                        Q97.5
+Intercept                          3.09451845
+conditionprequestions              1.47792277
+video_length                       0.00602111
+conditionprequestions:video_length 0.00231416</code></pre>
+</div>
+</div>
+</section>
+<section id="avg_time_of_prequestions-avg-percent-of-the-video-elapsed-when-prequestions-are-addressed" class="level3">
+<h3 class="anchored" data-anchor-id="avg_time_of_prequestions-avg-percent-of-the-video-elapsed-when-prequestions-are-addressed">avg_time_of_prequestions: avg percent of the video elapsed when prequestions are addressed</h3>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>                                                  Estimate   Est.Error
+Intercept                                      0.777722313 0.359352494
+conditionprequestions                          0.115671530 0.206291595
+avg_time_of_prequestions                       0.002029103 0.002126241
+conditionprequestions:avg_time_of_prequestions 0.001441178 0.001607646
+                                                       Q2.5       Q97.5
+Intercept                                       0.063882012 1.465555108
+conditionprequestions                          -0.277869634 0.533270010
+avg_time_of_prequestions                       -0.002469685 0.006098455
+conditionprequestions:avg_time_of_prequestions -0.001742305 0.004591207</code></pre>
+</div>
+</div>
+</section>
+<section id="time_answering_preqs-cumulative-time-spent-addressing-prequestions-in-video" class="level3">
+<h3 class="anchored" data-anchor-id="time_answering_preqs-cumulative-time-spent-addressing-prequestions-in-video">time_answering_preqs: cumulative time spent addressing prequestions in video</h3>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>                                               Estimate    Est.Error
+Intercept                                  1.0362374190 0.2554176787
+conditionprequestions                      0.1967982975 0.1226744551
+time_answering_preqs                       0.0007402721 0.0010966017
+conditionprequestions:time_answering_preqs 0.0004149327 0.0006531831
+                                                   Q2.5       Q97.5
+Intercept                                   0.532965649 1.564462999
+conditionprequestions                      -0.027471573 0.447436409
+time_answering_preqs                       -0.001360563 0.003003712
+conditionprequestions:time_answering_preqs -0.000896321 0.001710659</code></pre>
+</div>
+</div>
+</section>
+<section id="answer_not_provided-was-there-at-least-one-prequestion-where-the-answer-was-never-presented-learner-needed-to-infer-answer" class="level3">
+<h3 class="anchored" data-anchor-id="answer_not_provided-was-there-at-least-one-prequestion-where-the-answer-was-never-presented-learner-needed-to-infer-answer">answer_not_provided: was there at least one prequestion where the answer was never presented (learner needed to infer answer)</h3>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>                                            Estimate Est.Error       Q2.5
+Intercept                                  0.9967683 0.2254284  0.5556663
+conditionprequestions                      0.3863225 0.1026126  0.1891876
+answer_not_provided                        0.2771405 0.2237141 -0.1593261
+conditionprequestions:answer_not_provided -0.2336285 0.1346954 -0.4899040
+                                               Q97.5
+Intercept                                 1.44115627
+conditionprequestions                     0.60086447
+answer_not_provided                       0.70608303
+conditionprequestions:answer_not_provided 0.04325556</code></pre>
+</div>
+</div>
+</section>
+<section id="require_memorization-does-any-prequestion-involve-memorization-of-a-wordtermphrase" class="level3">
+<h3 class="anchored" data-anchor-id="require_memorization-does-any-prequestion-involve-memorization-of-a-wordtermphrase">require_memorization: Does any prequestion involve memorization of a word/term/phrase?</h3>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>                                            Estimate  Est.Error        Q2.5
+Intercept                                  1.0843210 0.21166843  0.65803078
+conditionprequestions                      0.2371520 0.07765417  0.09752128
+require_memorization                       0.7469446 0.87307554 -0.95971556
+conditionprequestions:require_memorization 0.5807440 0.46192121 -0.27991764
+                                               Q97.5
+Intercept                                  1.5002462
+conditionprequestions                      0.4016745
+require_memorization                       2.5226223
+conditionprequestions:require_memorization 1.5012307</code></pre>
+</div>
+</div>
+</section>
+<section id="preq_difficulty-percent-correct-overall-on-the-prequestions-associated-with-the-video" class="level3">
+<h3 class="anchored" data-anchor-id="preq_difficulty-percent-correct-overall-on-the-prequestions-associated-with-the-video">preq_difficulty: percent correct (overall) on the prequestions associated with the video</h3>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>                                        Estimate Est.Error         Q2.5
+Intercept                              0.3438939 0.3884596 -0.411309074
+conditionprequestions                  0.4811758 0.2598282 -0.002194067
+preq_difficulty                        1.5159664 0.6423771  0.225769728
+conditionprequestions:preq_difficulty -0.4199715 0.4652783 -1.360869976
+                                          Q97.5
+Intercept                             1.0997589
+conditionprequestions                 1.0003168
+preq_difficulty                       2.7656987
+conditionprequestions:preq_difficulty 0.4595918</code></pre>
+</div>
+</div>
+</section>
 </section>
 </section>
 <section id="notes-misc" class="level1">
@@ -107,6 +435,18 @@ ul.task-list li input[type="checkbox"] {
 <p>Use a different model for participant-level moderators.</p>
 <p>For assignment-level moderators, use assignment ID not nested in classes? Because there are only two assignments per class, nesting seems unhelpful. Instead allow for class-level intercept?</p>
 <p>Also fit a model where the outcome is whether/how much of the video they watch. Whether = &gt; 5% of the video. Prediction is that prequestions will affect whether students watch the video.</p>
+<hr>
+<p>I also wrote a script to organize everything.&nbsp; As you know, I’ve felt uncomfortable with the piss poor documentation I provided about the ManyClasses2 moderators.&nbsp; So here (attached, and also in the ManyClasses 2 folder in Dropbox), you’ll find a script that grabs everything from OSF and organizes it into four different data frames:</p>
+<ul>
+<li><p><strong>mod_class</strong>: Moderators at the class-level (30 obs) - key is course_id</p></li>
+<li><p><strong>mod_exposure</strong>: Moderators at the exposure-level (60 obs; exposures are analogous to but distinct from “periods” in a repeated-measures design; in any case, here there are two “exposures” per class in this study) - keys are course_id + exposure</p></li>
+<li><p><strong>mod_student</strong>: Moderators at the student-level (1571 obs) - key is participant_id</p></li>
+<li><p><strong>mod_submission</strong>: Moderators at the level of each student’s interactions with a treatment (3142 obs; two observations per student, one for each exposure)</p></li>
+</ul>
+<p>I hope this makes moderator analyses super-easy!&nbsp;</p>
+<p>Note: Right now we only have one moderator at the class-level (the number of other graded assessments in the course).&nbsp; Obviously we could also do analyses on consent rate, enrollment, semester, institution, etc…&nbsp; But these are atheoretical, and we already understand class-level moderators to be underpowered, so I’ve not added them.&nbsp; If you think I should add ’em to mod_class, just let me know.</p>
+<p>Appreciatively,</p>
+<p>Ben</p>
 </section>
 </section>
 
@@ -191,10 +531,27 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     // clear code selection
     e.clearSelection();
   });
-  function tippyHover(el, contentFn) {
+    var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+    var mailtoRegex = new RegExp(/^mailto:/);
+      var filterRegex = new RegExp('/' + window.location.host + '/');
+    var isInternal = (href) => {
+        return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+    }
+    // Inspect non-navigation links and adorn them if external
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+    for (var i=0; i<links.length; i++) {
+      const link = links[i];
+      if (!isInternal(link.href)) {
+        // undo the damage that might have been done by quarto-nav.js in the case of
+        // links that we want to consider external
+        if (link.dataset.originalHref !== undefined) {
+          link.href = link.dataset.originalHref;
+        }
+      }
+    }
+  function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
     const config = {
       allowHTML: true,
-      content: contentFn,
       maxWidth: 500,
       delay: 100,
       arrow: false,
@@ -204,8 +561,17 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       interactive: true,
       interactiveBorder: 10,
       theme: 'quarto',
-      placement: 'bottom-start'
+      placement: 'bottom-start',
     };
+    if (contentFn) {
+      config.content = contentFn;
+    }
+    if (onTriggerFn) {
+      config.onTrigger = onTriggerFn;
+    }
+    if (onUntriggerFn) {
+      config.onUntrigger = onUntriggerFn;
+    }
     window.tippy(el, config); 
   }
   const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
@@ -217,7 +583,130 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
       try { href = new URL(href).hash; } catch {}
       const id = href.replace(/^#\/?/, "");
       const note = window.document.getElementById(id);
-      return note.innerHTML;
+      if (note) {
+        return note.innerHTML;
+      } else {
+        return "";
+      }
+    });
+  }
+  const xrefs = window.document.querySelectorAll('a.quarto-xref');
+  const processXRef = (id, note) => {
+    // Strip column container classes
+    const stripColumnClz = (el) => {
+      el.classList.remove("page-full", "page-columns");
+      if (el.children) {
+        for (const child of el.children) {
+          stripColumnClz(child);
+        }
+      }
+    }
+    stripColumnClz(note)
+    if (id === null || id.startsWith('sec-')) {
+      // Special case sections, only their first couple elements
+      const container = document.createElement("div");
+      if (note.children && note.children.length > 2) {
+        container.appendChild(note.children[0].cloneNode(true));
+        for (let i = 1; i < note.children.length; i++) {
+          const child = note.children[i];
+          if (child.tagName === "P" && child.innerText === "") {
+            continue;
+          } else {
+            container.appendChild(child.cloneNode(true));
+            break;
+          }
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(container);
+        }
+        return container.innerHTML
+      } else {
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        return note.innerHTML;
+      }
+    } else {
+      // Remove any anchor links if they are present
+      const anchorLink = note.querySelector('a.anchorjs-link');
+      if (anchorLink) {
+        anchorLink.remove();
+      }
+      if (window.Quarto?.typesetMath) {
+        window.Quarto.typesetMath(note);
+      }
+      // TODO in 1.5, we should make sure this works without a callout special case
+      if (note.classList.contains("callout")) {
+        return note.outerHTML;
+      } else {
+        return note.innerHTML;
+      }
+    }
+  }
+  for (var i=0; i<xrefs.length; i++) {
+    const xref = xrefs[i];
+    tippyHover(xref, undefined, function(instance) {
+      instance.disable();
+      let url = xref.getAttribute('href');
+      let hash = undefined; 
+      if (url.startsWith('#')) {
+        hash = url;
+      } else {
+        try { hash = new URL(url).hash; } catch {}
+      }
+      if (hash) {
+        const id = hash.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note !== null) {
+          try {
+            const html = processXRef(id, note.cloneNode(true));
+            instance.setContent(html);
+          } finally {
+            instance.enable();
+            instance.show();
+          }
+        } else {
+          // See if we can fetch this
+          fetch(url.split('#')[0])
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.getElementById(id);
+            if (note !== null) {
+              const html = processXRef(id, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      } else {
+        // See if we can fetch a full url (with no hash to target)
+        // This is a special case and we should probably do some content thinning / targeting
+        fetch(url)
+        .then(res => res.text())
+        .then(html => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(html, "text/html");
+          const note = htmlDoc.querySelector('main.content');
+          if (note !== null) {
+            // This should only happen for chapter cross references
+            // (since there is no id in the URL)
+            // remove the first header
+            if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+              note.children[0].remove();
+            }
+            const html = processXRef(null, note);
+            instance.setContent(html);
+          } 
+        }).finally(() => {
+          instance.enable();
+          instance.show();
+        });
+      }
+    }, function(instance) {
     });
   }
       let selectedAnnoteEl;
@@ -261,6 +750,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
             }
             div.style.top = top - 2 + "px";
             div.style.height = height + 4 + "px";
+            div.style.left = 0;
             let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
             if (gutterDiv === null) {
               gutterDiv = window.document.createElement("div");
@@ -286,6 +776,32 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
         });
         selectedAnnoteEl = undefined;
       };
+        // Handle positioning of the toggle
+    window.addEventListener(
+      "resize",
+      throttle(() => {
+        elRect = undefined;
+        if (selectedAnnoteEl) {
+          selectCodeLines(selectedAnnoteEl);
+        }
+      }, 10)
+    );
+    function throttle(fn, ms) {
+    let throttle = false;
+    let timer;
+      return (...args) => {
+        if(!throttle) { // first call gets through
+            fn.apply(this, args);
+            throttle = true;
+        } else { // all the others get throttled
+            if(timer) clearTimeout(timer); // cancel #2
+            timer = setTimeout(() => {
+              fn.apply(this, args);
+              timer = throttle = false;
+            }, ms);
+        }
+      };
+    }
       // Attach click handler to the DT
       const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
       for (const annoteDlNode of annoteDls) {
@@ -346,6 +862,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
 });
 </script>
 </div> <!-- /content -->
+
 
 
 
