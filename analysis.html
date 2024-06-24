@@ -123,91 +123,16 @@ Figure&nbsp;3: Model estimates of the benefit of prequestions for each class, ta
 <h3 class="anchored" data-anchor-id="number-of-assignments">Number of Assignments</h3>
 <div class="cell">
 <div class="cell-output cell-output-stdout">
-<pre><code> Family: binomial 
-  Links: mu = logit 
-Formula: score | trials(trials) ~ condition * nbr_other_assessments + (1 | course_id/participant_id) + (0 + condition + exposure_order | course_id) 
-   Data: data (Number of observations: 3142) 
-  Draws: 30 chains, each with iter = 2000; warmup = 1000; thin = 1;
-         total post-warmup draws = 30000
-
-Multilevel Hyperparameters:
-~course_id (Number of levels: 30) 
-                                                                   Estimate
-sd(Intercept)                                                          0.96
-sd(conditioncontrol)                                                   0.33
-sd(conditionprequestions)                                              0.39
-sd(exposure_orderprequestions_then_control)                            0.28
-cor(conditioncontrol,conditionprequestions)                            0.51
-cor(conditioncontrol,exposure_orderprequestions_then_control)         -0.19
-cor(conditionprequestions,exposure_orderprequestions_then_control)    -0.01
-                                                                   Est.Error
-sd(Intercept)                                                           0.22
-sd(conditioncontrol)                                                    0.24
-sd(conditionprequestions)                                               0.27
-sd(exposure_orderprequestions_then_control)                             0.15
-cor(conditioncontrol,conditionprequestions)                             0.48
-cor(conditioncontrol,exposure_orderprequestions_then_control)           0.48
-cor(conditionprequestions,exposure_orderprequestions_then_control)      0.47
-                                                                   l-95% CI
-sd(Intercept)                                                          0.42
-sd(conditioncontrol)                                                   0.03
-sd(conditionprequestions)                                              0.05
-sd(exposure_orderprequestions_then_control)                            0.05
-cor(conditioncontrol,conditionprequestions)                           -0.69
-cor(conditioncontrol,exposure_orderprequestions_then_control)         -0.92
-cor(conditionprequestions,exposure_orderprequestions_then_control)    -0.85
-                                                                   u-95% CI
-sd(Intercept)                                                          1.36
-sd(conditioncontrol)                                                   0.96
-sd(conditionprequestions)                                              1.07
-sd(exposure_orderprequestions_then_control)                            0.61
-cor(conditioncontrol,conditionprequestions)                            0.99
-cor(conditioncontrol,exposure_orderprequestions_then_control)          0.79
-cor(conditionprequestions,exposure_orderprequestions_then_control)     0.86
-                                                                   Rhat
-sd(Intercept)                                                      1.02
-sd(conditioncontrol)                                               1.02
-sd(conditionprequestions)                                          1.02
-sd(exposure_orderprequestions_then_control)                        1.01
-cor(conditioncontrol,conditionprequestions)                        1.02
-cor(conditioncontrol,exposure_orderprequestions_then_control)      1.00
-cor(conditionprequestions,exposure_orderprequestions_then_control) 1.00
-                                                                   Bulk_ESS
-sd(Intercept)                                                          1529
-sd(conditioncontrol)                                                   1772
-sd(conditionprequestions)                                              1092
-sd(exposure_orderprequestions_then_control)                            4582
-cor(conditioncontrol,conditionprequestions)                            1759
-cor(conditioncontrol,exposure_orderprequestions_then_control)          6347
-cor(conditionprequestions,exposure_orderprequestions_then_control)     8186
-                                                                   Tail_ESS
-sd(Intercept)                                                           686
-sd(conditioncontrol)                                                    910
-sd(conditionprequestions)                                              1075
-sd(exposure_orderprequestions_then_control)                            9659
-cor(conditioncontrol,conditionprequestions)                            3651
-cor(conditioncontrol,exposure_orderprequestions_then_control)         11550
-cor(conditionprequestions,exposure_orderprequestions_then_control)    13875
-
-~course_id:participant_id (Number of levels: 1571) 
-              Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-sd(Intercept)     1.01      0.04     0.94     1.09 1.00    13200    21566
-
-Regression Coefficients:
-                                            Estimate Est.Error l-95% CI
-Intercept                                       1.15      0.27     0.61
-conditionprequestions                           0.26      0.11     0.05
-nbr_other_assessments                          -0.00      0.01    -0.02
-conditionprequestions:nbr_other_assessments    -0.00      0.00    -0.01
-                                            u-95% CI Rhat Bulk_ESS Tail_ESS
-Intercept                                       1.70 1.00    13621    17838
-conditionprequestions                           0.48 1.00    23407    22295
-nbr_other_assessments                           0.02 1.00    13071    17108
-conditionprequestions:nbr_other_assessments     0.01 1.00    19075    19217
-
-Draws were sampled using sampling(NUTS). For each parameter, Bulk_ESS
-and Tail_ESS are effective sample size measures, and Rhat is the potential
-scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
+<pre><code>                                                 Estimate   Est.Error
+Intercept                                    1.1485410897 0.274511970
+conditionprequestions                        0.2592030418 0.108009070
+nbr_other_assessments                       -0.0030888913 0.010731318
+conditionprequestions:nbr_other_assessments -0.0005784275 0.003980395
+                                                    Q2.5       Q97.5
+Intercept                                    0.614125059 1.699603059
+conditionprequestions                        0.049840173 0.477482458
+nbr_other_assessments                       -0.024366697 0.017934830
+conditionprequestions:nbr_other_assessments -0.007988168 0.007809536</code></pre>
 </div>
 </div>
 </section>
@@ -219,91 +144,11 @@ scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 <p>Question about this one: we can’t nest this in classes, right? Because there are classes with all one grade level? And we’re more interested in how this behaves at the class level?</p>
 <div class="cell">
 <div class="cell-output cell-output-stdout">
-<pre><code> Family: binomial 
-  Links: mu = logit 
-Formula: score | trials(trials) ~ condition * level + (1 | course_id/participant_id) + (0 + exposure_order + condition | course_id) 
-   Data: data (Number of observations: 3142) 
-  Draws: 18 chains, each with iter = 2000; warmup = 1000; thin = 1;
-         total post-warmup draws = 18000
-
-Multilevel Hyperparameters:
-~course_id (Number of levels: 30) 
-                                                                                    Estimate
-sd(Intercept)                                                                           0.92
-sd(exposure_ordercontrol_then_prequestion)                                              0.42
-sd(exposure_orderprequestions_then_control)                                             0.40
-sd(conditionprequestions)                                                               0.22
-cor(exposure_ordercontrol_then_prequestion,exposure_orderprequestions_then_control)     0.42
-cor(exposure_ordercontrol_then_prequestion,conditionprequestions)                       0.01
-cor(exposure_orderprequestions_then_control,conditionprequestions)                      0.25
-                                                                                    Est.Error
-sd(Intercept)                                                                            0.23
-sd(exposure_ordercontrol_then_prequestion)                                               0.26
-sd(exposure_orderprequestions_then_control)                                              0.25
-sd(conditionprequestions)                                                                0.10
-cor(exposure_ordercontrol_then_prequestion,exposure_orderprequestions_then_control)      0.48
-cor(exposure_ordercontrol_then_prequestion,conditionprequestions)                        0.46
-cor(exposure_orderprequestions_then_control,conditionprequestions)                       0.45
-                                                                                    l-95% CI
-sd(Intercept)                                                                           0.34
-sd(exposure_ordercontrol_then_prequestion)                                              0.06
-sd(exposure_orderprequestions_then_control)                                             0.05
-sd(conditionprequestions)                                                               0.05
-cor(exposure_ordercontrol_then_prequestion,exposure_orderprequestions_then_control)    -0.71
-cor(exposure_ordercontrol_then_prequestion,conditionprequestions)                      -0.84
-cor(exposure_orderprequestions_then_control,conditionprequestions)                     -0.75
-                                                                                    u-95% CI
-sd(Intercept)                                                                           1.33
-sd(exposure_ordercontrol_then_prequestion)                                              1.05
-sd(exposure_orderprequestions_then_control)                                             1.00
-sd(conditionprequestions)                                                               0.44
-cor(exposure_ordercontrol_then_prequestion,exposure_orderprequestions_then_control)     0.97
-cor(exposure_ordercontrol_then_prequestion,conditionprequestions)                       0.84
-cor(exposure_orderprequestions_then_control,conditionprequestions)                      0.92
-                                                                                    Rhat
-sd(Intercept)                                                                       1.01
-sd(exposure_ordercontrol_then_prequestion)                                          1.02
-sd(exposure_orderprequestions_then_control)                                         1.02
-sd(conditionprequestions)                                                           1.00
-cor(exposure_ordercontrol_then_prequestion,exposure_orderprequestions_then_control) 1.01
-cor(exposure_ordercontrol_then_prequestion,conditionprequestions)                   1.01
-cor(exposure_orderprequestions_then_control,conditionprequestions)                  1.00
-                                                                                    Bulk_ESS
-sd(Intercept)                                                                           1476
-sd(exposure_ordercontrol_then_prequestion)                                              1021
-sd(exposure_orderprequestions_then_control)                                             1010
-sd(conditionprequestions)                                                               6454
-cor(exposure_ordercontrol_then_prequestion,exposure_orderprequestions_then_control)     1665
-cor(exposure_ordercontrol_then_prequestion,conditionprequestions)                       3277
-cor(exposure_orderprequestions_then_control,conditionprequestions)                      4626
-                                                                                    Tail_ESS
-sd(Intercept)                                                                            990
-sd(exposure_ordercontrol_then_prequestion)                                              1578
-sd(exposure_orderprequestions_then_control)                                             1526
-sd(conditionprequestions)                                                               6353
-cor(exposure_ordercontrol_then_prequestion,exposure_orderprequestions_then_control)     4831
-cor(exposure_ordercontrol_then_prequestion,conditionprequestions)                       6850
-cor(exposure_orderprequestions_then_control,conditionprequestions)                      7364
-
-~course_id:participant_id (Number of levels: 1571) 
-              Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
-sd(Intercept)     1.01      0.04     0.94     1.09 1.00     8008    12395
-
-Regression Coefficients:
-                            Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS
-Intercept                       0.59      0.58    -0.54     1.73 1.00     9025
-conditionprequestions           0.05      0.26    -0.47     0.56 1.00    13036
-level                           0.04      0.04    -0.04     0.12 1.00     9105
-conditionprequestions:level     0.01      0.02    -0.02     0.05 1.00    12328
-                            Tail_ESS
-Intercept                      11524
-conditionprequestions          12646
-level                          11795
-conditionprequestions:level    12947
-
-Draws were sampled using sampling(NUTS). For each parameter, Bulk_ESS
-and Tail_ESS are effective sample size measures, and Rhat is the potential
-scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
+<pre><code>                              Estimate  Est.Error        Q2.5      Q97.5
+Intercept                   0.59011502 0.57525929 -0.54440694 1.72537011
+conditionprequestions       0.04522061 0.26015033 -0.46550282 0.56389167
+level                       0.04083317 0.04255271 -0.04250762 0.12478853
+conditionprequestions:level 0.01465074 0.01989930 -0.02455521 0.05482659</code></pre>
 </div>
 </div>
 </section>

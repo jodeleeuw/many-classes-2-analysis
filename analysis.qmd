@@ -314,7 +314,7 @@ class_level_number_assignments_fit <- run_brms_model(
 
 ```{r}
 #| echo: false
-summary(class_level_number_assignments_fit)
+fixef(class_level_number_assignments_fit)
 ```
 
 ## Student Level
@@ -347,7 +347,7 @@ student_level_grade_level_fit <- run_brms_model(
 
 ```{r}
 #| echo: false
-summary(student_level_grade_level_fit)
+fixef(student_level_grade_level_fit)
 ```
 
 ### Pretest
