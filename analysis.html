@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
 
 <meta charset="utf-8">
-<meta name="generator" content="quarto-1.4.553">
+<meta name="generator" content="quarto-1.5.43">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
@@ -66,7 +66,7 @@ ul.task-list li input[type="checkbox"] {
 <h1>Raw data visualization</h1>
 <div class="cell">
 <div class="cell-output-display">
-<div id="fig-raw-data" class="quarto-figure quarto-figure-center quarto-float anchored">
+<div id="fig-raw-data" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-raw-data-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <img src="analysis_files/figure-html/fig-raw-data-1.png" class="img-fluid figure-img" width="672">
@@ -84,10 +84,10 @@ Figure&nbsp;1: The benefit of prequestions for each class, calculated as the pro
 <p>This model is <code>score | trials(trials) ~ condition + (0 + condition | course_id) + (1 | course_id/participant_id)</code>. A fixed effect of condition (prequestions vs.&nbsp;control) and a random effect of condition per class, and random intercept of participant , nested in random intercept of class.</p>
 <div class="cell">
 <div class="cell-output-display">
-<div id="fig-overall-forest-plot" class="quarto-figure quarto-figure-center quarto-float anchored">
+<div id="fig-overall-forest-plot" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-overall-forest-plot-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="analysis_files/figure-html/fig-overall-forest-plot-1.png" class="img-fluid figure-img" width="672">
+<img src="analysis_files/figure-html/fig-overall-forest-plot-1.png" class="img-fluid figure-img" width="960">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-overall-forest-plot-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;2: Model estimates of the benefit of prequestions for each class, shown as an odds ratio (probability of correct responses in prequestions / probability of correct responses in control). The circle is the median of the posterior, the thicker line is a 66% highest-density interval, and the thin line is a 95% highest-density interval. The diamond at the bottom shows the overall effect across classes.
@@ -104,7 +104,7 @@ Figure&nbsp;2: Model estimates of the benefit of prequestions for each class, sh
 <p>Note taking for myself: the idea here is that there are different assignments in each class, and exposure order is basically which assignment people got. So wouldn’t we expect 0 fixed effect, since there’s no reason to expect the first assignments to be systematically different from the second assignments across classes? Should this be a random class-level effect?</p>
 <div class="cell">
 <div class="cell-output-display">
-<div id="fig-overall-forest-plot-with-exposure-order" class="quarto-figure quarto-figure-center quarto-float anchored">
+<div id="fig-overall-forest-plot-with-exposure-order" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-overall-forest-plot-with-exposure-order-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <img src="analysis_files/figure-html/fig-overall-forest-plot-with-exposure-order-1.png" class="img-fluid figure-img" width="672">
@@ -123,16 +123,91 @@ Figure&nbsp;3: Model estimates of the benefit of prequestions for each class, ta
 <h3 class="anchored" data-anchor-id="number-of-assignments">Number of Assignments</h3>
 <div class="cell">
 <div class="cell-output cell-output-stdout">
-<pre><code>                                                Estimate   Est.Error
-Intercept                                    1.138706685 0.254626851
-conditionprequestions                        0.265771789 0.101591799
-nbr_other_assessments                       -0.002586230 0.010345856
-conditionprequestions:nbr_other_assessments -0.001300227 0.003512777
-                                                    Q2.5       Q97.5
-Intercept                                    0.642557931 1.639667153
-conditionprequestions                        0.077080285 0.474789012
-nbr_other_assessments                       -0.022244302 0.018455579
-conditionprequestions:nbr_other_assessments -0.007817892 0.006104962</code></pre>
+<pre><code> Family: binomial 
+  Links: mu = logit 
+Formula: score | trials(trials) ~ condition * nbr_other_assessments + (1 | course_id/participant_id) + (0 + condition + exposure_order | course_id) 
+   Data: data (Number of observations: 3142) 
+  Draws: 30 chains, each with iter = 2000; warmup = 1000; thin = 1;
+         total post-warmup draws = 30000
+
+Multilevel Hyperparameters:
+~course_id (Number of levels: 30) 
+                                                                   Estimate
+sd(Intercept)                                                          0.96
+sd(conditioncontrol)                                                   0.33
+sd(conditionprequestions)                                              0.39
+sd(exposure_orderprequestions_then_control)                            0.28
+cor(conditioncontrol,conditionprequestions)                            0.51
+cor(conditioncontrol,exposure_orderprequestions_then_control)         -0.19
+cor(conditionprequestions,exposure_orderprequestions_then_control)    -0.01
+                                                                   Est.Error
+sd(Intercept)                                                           0.22
+sd(conditioncontrol)                                                    0.24
+sd(conditionprequestions)                                               0.27
+sd(exposure_orderprequestions_then_control)                             0.15
+cor(conditioncontrol,conditionprequestions)                             0.48
+cor(conditioncontrol,exposure_orderprequestions_then_control)           0.48
+cor(conditionprequestions,exposure_orderprequestions_then_control)      0.47
+                                                                   l-95% CI
+sd(Intercept)                                                          0.42
+sd(conditioncontrol)                                                   0.03
+sd(conditionprequestions)                                              0.05
+sd(exposure_orderprequestions_then_control)                            0.05
+cor(conditioncontrol,conditionprequestions)                           -0.69
+cor(conditioncontrol,exposure_orderprequestions_then_control)         -0.92
+cor(conditionprequestions,exposure_orderprequestions_then_control)    -0.85
+                                                                   u-95% CI
+sd(Intercept)                                                          1.36
+sd(conditioncontrol)                                                   0.96
+sd(conditionprequestions)                                              1.07
+sd(exposure_orderprequestions_then_control)                            0.61
+cor(conditioncontrol,conditionprequestions)                            0.99
+cor(conditioncontrol,exposure_orderprequestions_then_control)          0.79
+cor(conditionprequestions,exposure_orderprequestions_then_control)     0.86
+                                                                   Rhat
+sd(Intercept)                                                      1.02
+sd(conditioncontrol)                                               1.02
+sd(conditionprequestions)                                          1.02
+sd(exposure_orderprequestions_then_control)                        1.01
+cor(conditioncontrol,conditionprequestions)                        1.02
+cor(conditioncontrol,exposure_orderprequestions_then_control)      1.00
+cor(conditionprequestions,exposure_orderprequestions_then_control) 1.00
+                                                                   Bulk_ESS
+sd(Intercept)                                                          1529
+sd(conditioncontrol)                                                   1772
+sd(conditionprequestions)                                              1092
+sd(exposure_orderprequestions_then_control)                            4582
+cor(conditioncontrol,conditionprequestions)                            1759
+cor(conditioncontrol,exposure_orderprequestions_then_control)          6347
+cor(conditionprequestions,exposure_orderprequestions_then_control)     8186
+                                                                   Tail_ESS
+sd(Intercept)                                                           686
+sd(conditioncontrol)                                                    910
+sd(conditionprequestions)                                              1075
+sd(exposure_orderprequestions_then_control)                            9659
+cor(conditioncontrol,conditionprequestions)                            3651
+cor(conditioncontrol,exposure_orderprequestions_then_control)         11550
+cor(conditionprequestions,exposure_orderprequestions_then_control)    13875
+
+~course_id:participant_id (Number of levels: 1571) 
+              Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+sd(Intercept)     1.01      0.04     0.94     1.09 1.00    13200    21566
+
+Regression Coefficients:
+                                            Estimate Est.Error l-95% CI
+Intercept                                       1.15      0.27     0.61
+conditionprequestions                           0.26      0.11     0.05
+nbr_other_assessments                          -0.00      0.01    -0.02
+conditionprequestions:nbr_other_assessments    -0.00      0.00    -0.01
+                                            u-95% CI Rhat Bulk_ESS Tail_ESS
+Intercept                                       1.70 1.00    13621    17838
+conditionprequestions                           0.48 1.00    23407    22295
+nbr_other_assessments                           0.02 1.00    13071    17108
+conditionprequestions:nbr_other_assessments     0.01 1.00    19075    19217
+
+Draws were sampled using sampling(NUTS). For each parameter, Bulk_ESS
+and Tail_ESS are effective sample size measures, and Rhat is the potential
+scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 </div>
 </div>
 </section>
@@ -144,11 +219,91 @@ conditionprequestions:nbr_other_assessments -0.007817892 0.006104962</code></pre
 <p>Question about this one: we can’t nest this in classes, right? Because there are classes with all one grade level? And we’re more interested in how this behaves at the class level?</p>
 <div class="cell">
 <div class="cell-output cell-output-stdout">
-<pre><code>                              Estimate  Est.Error        Q2.5      Q97.5
-Intercept                   0.56710559 0.58613231 -0.58634937 1.68567082
-conditionprequestions       0.06800658 0.29917245 -0.52398144 0.67313982
-level                       0.04359620 0.04321148 -0.03858993 0.12791178
-conditionprequestions:level 0.01210446 0.02242373 -0.03120560 0.05849032</code></pre>
+<pre><code> Family: binomial 
+  Links: mu = logit 
+Formula: score | trials(trials) ~ condition * level + (1 | course_id/participant_id) + (0 + exposure_order + condition | course_id) 
+   Data: data (Number of observations: 3142) 
+  Draws: 18 chains, each with iter = 2000; warmup = 1000; thin = 1;
+         total post-warmup draws = 18000
+
+Multilevel Hyperparameters:
+~course_id (Number of levels: 30) 
+                                                                                    Estimate
+sd(Intercept)                                                                           0.92
+sd(exposure_ordercontrol_then_prequestion)                                              0.42
+sd(exposure_orderprequestions_then_control)                                             0.40
+sd(conditionprequestions)                                                               0.22
+cor(exposure_ordercontrol_then_prequestion,exposure_orderprequestions_then_control)     0.42
+cor(exposure_ordercontrol_then_prequestion,conditionprequestions)                       0.01
+cor(exposure_orderprequestions_then_control,conditionprequestions)                      0.25
+                                                                                    Est.Error
+sd(Intercept)                                                                            0.23
+sd(exposure_ordercontrol_then_prequestion)                                               0.26
+sd(exposure_orderprequestions_then_control)                                              0.25
+sd(conditionprequestions)                                                                0.10
+cor(exposure_ordercontrol_then_prequestion,exposure_orderprequestions_then_control)      0.48
+cor(exposure_ordercontrol_then_prequestion,conditionprequestions)                        0.46
+cor(exposure_orderprequestions_then_control,conditionprequestions)                       0.45
+                                                                                    l-95% CI
+sd(Intercept)                                                                           0.34
+sd(exposure_ordercontrol_then_prequestion)                                              0.06
+sd(exposure_orderprequestions_then_control)                                             0.05
+sd(conditionprequestions)                                                               0.05
+cor(exposure_ordercontrol_then_prequestion,exposure_orderprequestions_then_control)    -0.71
+cor(exposure_ordercontrol_then_prequestion,conditionprequestions)                      -0.84
+cor(exposure_orderprequestions_then_control,conditionprequestions)                     -0.75
+                                                                                    u-95% CI
+sd(Intercept)                                                                           1.33
+sd(exposure_ordercontrol_then_prequestion)                                              1.05
+sd(exposure_orderprequestions_then_control)                                             1.00
+sd(conditionprequestions)                                                               0.44
+cor(exposure_ordercontrol_then_prequestion,exposure_orderprequestions_then_control)     0.97
+cor(exposure_ordercontrol_then_prequestion,conditionprequestions)                       0.84
+cor(exposure_orderprequestions_then_control,conditionprequestions)                      0.92
+                                                                                    Rhat
+sd(Intercept)                                                                       1.01
+sd(exposure_ordercontrol_then_prequestion)                                          1.02
+sd(exposure_orderprequestions_then_control)                                         1.02
+sd(conditionprequestions)                                                           1.00
+cor(exposure_ordercontrol_then_prequestion,exposure_orderprequestions_then_control) 1.01
+cor(exposure_ordercontrol_then_prequestion,conditionprequestions)                   1.01
+cor(exposure_orderprequestions_then_control,conditionprequestions)                  1.00
+                                                                                    Bulk_ESS
+sd(Intercept)                                                                           1476
+sd(exposure_ordercontrol_then_prequestion)                                              1021
+sd(exposure_orderprequestions_then_control)                                             1010
+sd(conditionprequestions)                                                               6454
+cor(exposure_ordercontrol_then_prequestion,exposure_orderprequestions_then_control)     1665
+cor(exposure_ordercontrol_then_prequestion,conditionprequestions)                       3277
+cor(exposure_orderprequestions_then_control,conditionprequestions)                      4626
+                                                                                    Tail_ESS
+sd(Intercept)                                                                            990
+sd(exposure_ordercontrol_then_prequestion)                                              1578
+sd(exposure_orderprequestions_then_control)                                             1526
+sd(conditionprequestions)                                                               6353
+cor(exposure_ordercontrol_then_prequestion,exposure_orderprequestions_then_control)     4831
+cor(exposure_ordercontrol_then_prequestion,conditionprequestions)                       6850
+cor(exposure_orderprequestions_then_control,conditionprequestions)                      7364
+
+~course_id:participant_id (Number of levels: 1571) 
+              Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+sd(Intercept)     1.01      0.04     0.94     1.09 1.00     8008    12395
+
+Regression Coefficients:
+                            Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS
+Intercept                       0.59      0.58    -0.54     1.73 1.00     9025
+conditionprequestions           0.05      0.26    -0.47     0.56 1.00    13036
+level                           0.04      0.04    -0.04     0.12 1.00     9105
+conditionprequestions:level     0.01      0.02    -0.02     0.05 1.00    12328
+                            Tail_ESS
+Intercept                      11524
+conditionprequestions          12646
+level                          11795
+conditionprequestions:level    12947
+
+Draws were sampled using sampling(NUTS). For each parameter, Bulk_ESS
+and Tail_ESS are effective sample size measures, and Rhat is the potential
+scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
 </div>
 </div>
 </section>
@@ -157,37 +312,11 @@ conditionprequestions:level 0.01210446 0.02242373 -0.03120560 0.05849032</code><
 <p><em>Note</em>: We get a warning that NAs are excluded.</p>
 <div class="cell">
 <div class="cell-output cell-output-stdout">
-<pre><code>                                 Estimate Est.Error       Q2.5      Q97.5
-Intercept                     -1.14267334 0.4616147 -2.0896466 -0.2638754
-conditionprequestions         -0.09147072 0.2753749 -0.6376390  0.4428374
-pretest                        2.54066635 0.4589428  1.6810986  3.4808578
-conditionprequestions:pretest  0.38163862 0.3128153 -0.2144405  1.0011360</code></pre>
-</div>
-</div>
-<p>Plot the student-level prequestion effect by student-level pretest</p>
-<div class="cell">
-<div class="cell-output cell-output-stderr">
-<pre><code>`geom_smooth()` using formula = 'y ~ x'</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: Removed 5 rows containing non-finite outside the scale range
-(`stat_smooth()`).</code></pre>
-</div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: Removed 5 rows containing missing values or values outside the scale range
-(`geom_point()`).</code></pre>
-</div>
-<div class="cell-output-display">
-<div id="fig-pretest-by-condition" class="quarto-figure quarto-figure-center quarto-float anchored" width="480">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-pretest-by-condition-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="analysis_files/figure-html/fig-pretest-by-condition-1.png" id="fig-pretest-by-condition" class="img-fluid figure-img" width="480">
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig quarto-uncaptioned" id="fig-pretest-by-condition-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;4
-</figcaption>
-</figure>
-</div>
+<pre><code>                                Estimate Est.Error       Q2.5     Q97.5
+Intercept                     -0.1700193 0.4143293 -0.9578223 0.6824816
+conditionprequestions         -0.1317024 0.2171807 -0.5618882 0.2960586
+pretest                        1.3062053 0.4161854  0.4320505 2.0702413
+conditionprequestions:pretest  0.4191411 0.2458184 -0.0611335 0.9109878</code></pre>
 </div>
 </div>
 </section>
@@ -195,11 +324,11 @@ Figure&nbsp;4
 <h3 class="anchored" data-anchor-id="in-major">In Major</h3>
 <div class="cell">
 <div class="cell-output cell-output-stdout">
-<pre><code>                                 Estimate  Est.Error        Q2.5     Q97.5
-Intercept                      1.05983145 0.20948315  0.64765404 1.4686427
-conditionprequestions          0.20811816 0.09319701  0.04078662 0.4093480
-in_major                       0.11579498 0.16686590 -0.21799814 0.4386215
-conditionprequestions:in_major 0.06622255 0.14257762 -0.20263712 0.3580761</code></pre>
+<pre><code>                                 Estimate Est.Error        Q2.5     Q97.5
+Intercept                      1.05199190 0.2071393  0.64529417 1.4655072
+conditionprequestions          0.21313711 0.0955254  0.03192865 0.4123756
+in_major                       0.09766705 0.1752567 -0.25124247 0.4392359
+conditionprequestions:in_major 0.06878901 0.1459336 -0.21320920 0.3674695</code></pre>
 </div>
 </div>
 </section>
@@ -209,15 +338,15 @@ conditionprequestions:in_major 0.06622255 0.14257762 -0.20263712 0.3580761</code
 <div class="cell">
 <div class="cell-output cell-output-stdout">
 <pre><code>                                          Estimate Est.Error       Q2.5
-Intercept                                0.9272632 0.2090636  0.5205645
-conditionprequestions                   -0.2030010 0.1077540 -0.4014074
-prequestion_score                        0.2850007 0.2003186 -0.1215907
-conditionprequestions:prequestion_score  0.9033898 0.1765628  0.5589993
-                                             Q97.5
-Intercept                               1.34218695
-conditionprequestions                   0.01581708
-prequestion_score                       0.66658043
-conditionprequestions:prequestion_score 1.25695766</code></pre>
+Intercept                                0.9410335 0.2111078  0.5278990
+conditionprequestions                   -0.1359334 0.1134044 -0.3430328
+prequestion_score                        0.2754550 0.1883453 -0.1126185
+conditionprequestions:prequestion_score  0.7958311 0.1720077  0.4505461
+                                            Q97.5
+Intercept                               1.3507736
+conditionprequestions                   0.1040173
+prequestion_score                       0.6257440
+conditionprequestions:prequestion_score 1.1278229</code></pre>
 </div>
 </div>
 </section>
@@ -229,10 +358,10 @@ conditionprequestions:prequestion_score 1.25695766</code></pre>
 <div class="cell">
 <div class="cell-output cell-output-stdout">
 <pre><code>                                Estimate Est.Error        Q2.5     Q97.5
-Intercept                     0.90031462 0.1986240  0.50763041 1.2832993
-conditionprequestions         0.22155470 0.1041605  0.02953640 0.4389090
-viewpct                       0.30757544 0.1246368  0.06670658 0.5572133
-conditionprequestions:viewpct 0.03159017 0.1258317 -0.20931649 0.2869207</code></pre>
+Intercept                     0.89910251 0.2024996  0.49824235 1.2924833
+conditionprequestions         0.21657031 0.1050414  0.01826824 0.4341344
+viewpct                       0.29040711 0.1207213  0.05421348 0.5332300
+conditionprequestions:viewpct 0.04653907 0.1259873 -0.19721736 0.2990049</code></pre>
 </div>
 </div>
 </section>
@@ -240,16 +369,16 @@ conditionprequestions:viewpct 0.03159017 0.1258317 -0.20931649 0.2869207</code><
 <h3 class="anchored" data-anchor-id="did-the-student-start-the-video-at-all">Did the student start the video at all?</h3>
 <div class="cell">
 <div class="cell-output cell-output-stdout">
-<pre><code>                                         Estimate Est.Error       Q2.5
-Intercept                               0.9686228 0.2095973  0.5599368
-conditionprequestions                   0.1338766 0.1234850 -0.1020641
-initiate_playback                       0.1650970 0.1448756 -0.1254721
-conditionprequestions:initiate_playback 0.1525935 0.1470207 -0.1277152
+<pre><code>                                         Estimate Est.Error        Q2.5
+Intercept                               0.9740670 0.2129967  0.55375675
+conditionprequestions                   0.1387440 0.1262866 -0.09747221
+initiate_playback                       0.1515584 0.1381412 -0.12870099
+conditionprequestions:initiate_playback 0.1530932 0.1458504 -0.13178068
                                             Q97.5
-Intercept                               1.3836058
-conditionprequestions                   0.3856911
-initiate_playback                       0.4492441
-conditionprequestions:initiate_playback 0.4416383</code></pre>
+Intercept                               1.3961798
+conditionprequestions                   0.3946439
+initiate_playback                       0.4138138
+conditionprequestions:initiate_playback 0.4380341</code></pre>
 </div>
 </div>
 </section>
@@ -257,11 +386,11 @@ conditionprequestions:initiate_playback 0.4416383</code></pre>
 <h3 class="anchored" data-anchor-id="n-events-clicks">N Events (clicks?)</h3>
 <div class="cell">
 <div class="cell-output cell-output-stdout">
-<pre><code>                                  Estimate   Est.Error        Q2.5      Q97.5
-Intercept                      0.885500514 0.190797030  0.51434510 1.26220129
-conditionprequestions          0.294698159 0.111393457  0.09305392 0.52739623
-nevents                        0.022996581 0.006799869  0.01040456 0.03738852
-conditionprequestions:nevents -0.001029318 0.008220684 -0.01690803 0.01575314</code></pre>
+<pre><code>                                   Estimate   Est.Error        Q2.5      Q97.5
+Intercept                      0.8789407468 0.195097546  0.49165672 1.26967495
+conditionprequestions          0.2830196730 0.107513470  0.08166186 0.50495302
+nevents                        0.0233593130 0.007026262  0.01028609 0.03792326
+conditionprequestions:nevents -0.0004721388 0.008535972 -0.01659649 0.01693655</code></pre>
 </div>
 </div>
 </section>
@@ -273,16 +402,16 @@ conditionprequestions:nevents -0.001029318 0.008220684 -0.01690803 0.01575314</c
 <h3 class="anchored" data-anchor-id="submission-time">Submission time</h3>
 <div class="cell">
 <div class="cell-output cell-output-stdout">
-<pre><code>                                               Estimate  Est.Error
-Intercept                                    1.13131817 0.20325563
-conditionprequestions                        0.17371145 0.09338948
-submDaysBeforeDueDate                       -0.01529796 0.03309903
-conditionprequestions:submDaysBeforeDueDate  0.03293765 0.02998388
-                                                     Q2.5      Q97.5
-Intercept                                    0.7337528365 1.53404384
-conditionprequestions                        0.0001490634 0.37213236
-submDaysBeforeDueDate                       -0.0830773079 0.04858057
-conditionprequestions:submDaysBeforeDueDate -0.0204887743 0.09837408</code></pre>
+<pre><code>                                               Estimate  Est.Error        Q2.5
+Intercept                                    1.13231324 0.21011301  0.71556466
+conditionprequestions                        0.16809970 0.09798907 -0.01793738
+submDaysBeforeDueDate                       -0.01726933 0.03462103 -0.08634888
+conditionprequestions:submDaysBeforeDueDate  0.03818521 0.03204600 -0.02043939
+                                                 Q97.5
+Intercept                                   1.54755229
+conditionprequestions                       0.36651862
+submDaysBeforeDueDate                       0.04984259
+conditionprequestions:submDaysBeforeDueDate 0.10634930</code></pre>
 </div>
 </div>
 </section>
@@ -294,11 +423,11 @@ conditionprequestions:submDaysBeforeDueDate -0.0204887743 0.09837408</code></pre
 <h3 class="anchored" data-anchor-id="delay-days-between-assignment-due-date-and-exam-date">delay: days between assignment due date and exam date</h3>
 <div class="cell">
 <div class="cell-output cell-output-stdout">
-<pre><code>                               Estimate   Est.Error        Q2.5      Q97.5
-Intercept                   1.053860387 0.259866772  0.55869352 1.57076772
-conditionprequestions       0.134899722 0.116782753 -0.08225814 0.38055361
-delay                       0.007776949 0.015392246 -0.02219653 0.03830752
-conditionprequestions:delay 0.011144282 0.008252656 -0.00540479 0.02706361</code></pre>
+<pre><code>                               Estimate   Est.Error         Q2.5      Q97.5
+Intercept                   1.067347365 0.262464920  0.559377619 1.59965098
+conditionprequestions       0.124416084 0.112037436 -0.085735420 0.35626069
+delay                       0.006963882 0.015946763 -0.023597724 0.03858447
+conditionprequestions:delay 0.011775632 0.008078036 -0.004355443 0.02749770</code></pre>
 </div>
 </div>
 </section>
@@ -306,32 +435,28 @@ conditionprequestions:delay 0.011144282 0.008252656 -0.00540479 0.02706361</code
 <h3 class="anchored" data-anchor-id="pct_correct-overall-percent-correct-on-the-exam-items">pct_correct: overall percent correct on the exam items</h3>
 <div class="cell">
 <div class="cell-output cell-output-stdout">
-<pre><code>                                     Estimate Est.Error       Q2.5      Q97.5
-Intercept                         -3.21109880 0.2070404 -3.6231295 -2.8026960
-conditionprequestions              0.21772559 0.2754758 -0.3088558  0.7895353
-pct_correct                        6.11926114 0.2934307  5.5483412  6.7009616
-conditionprequestions:pct_correct  0.02439812 0.3911912 -0.7822728  0.7747773</code></pre>
+<pre><code>                                    Estimate Est.Error       Q2.5      Q97.5
+Intercept                         -1.8144204 0.3127610 -2.3401440 -1.1165345
+conditionprequestions             -0.2781119 0.2187833 -0.7091758  0.1444422
+pct_correct                        4.1089841 0.4269439  3.1532000  4.8468652
+conditionprequestions:pct_correct  0.7618218 0.3122631  0.1635884  1.3876894</code></pre>
 </div>
 </div>
-</section>
-<section id="submdaysbeforeduedate-number-of-days-before-the-due-date-that-the-assignment-was-first-completed" class="level3">
-<h3 class="anchored" data-anchor-id="submdaysbeforeduedate-number-of-days-before-the-due-date-that-the-assignment-was-first-completed">submDaysBeforeDueDate: Number of days before the due date that the assignment was first completed</h3>
-<p><em>Can’t find this one?</em></p>
 </section>
 <section id="video_length-total-duration-of-video" class="level3">
 <h3 class="anchored" data-anchor-id="video_length-total-duration-of-video">video_length: total duration of video</h3>
 <div class="cell">
 <div class="cell-output cell-output-stdout">
 <pre><code>                                        Estimate   Est.Error         Q2.5
-Intercept                           1.2407995823 0.936463415 -0.570704939
-conditionprequestions               0.5096949153 0.477501549 -0.393603214
-video_length                       -0.0004311682 0.003371330 -0.007120887
-conditionprequestions:video_length -0.0009230310 0.001696703 -0.004420019
-                                        Q97.5
-Intercept                          3.09451845
-conditionprequestions              1.47792277
-video_length                       0.00602111
-conditionprequestions:video_length 0.00231416</code></pre>
+Intercept                           1.422750e+00 0.961500119 -0.436278462
+conditionprequestions               2.657384e-01 0.338969874 -0.396794724
+video_length                       -1.074829e-03 0.003499028 -0.008036701
+conditionprequestions:video_length -6.253813e-05 0.001217258 -0.002474542
+                                         Q97.5
+Intercept                          3.324472091
+conditionprequestions              0.937392656
+video_length                       0.005644177
+conditionprequestions:video_length 0.002317533</code></pre>
 </div>
 </div>
 </section>
@@ -340,15 +465,15 @@ conditionprequestions:video_length 0.00231416</code></pre>
 <div class="cell">
 <div class="cell-output cell-output-stdout">
 <pre><code>                                                  Estimate   Est.Error
-Intercept                                      0.777722313 0.359352494
-conditionprequestions                          0.115671530 0.206291595
-avg_time_of_prequestions                       0.002029103 0.002126241
-conditionprequestions:avg_time_of_prequestions 0.001441178 0.001607646
+Intercept                                      0.820607938 0.345692333
+conditionprequestions                          0.102047274 0.190544543
+avg_time_of_prequestions                       0.001886941 0.002136599
+conditionprequestions:avg_time_of_prequestions 0.001577370 0.001513700
                                                        Q2.5       Q97.5
-Intercept                                       0.063882012 1.465555108
-conditionprequestions                          -0.277869634 0.533270010
-avg_time_of_prequestions                       -0.002469685 0.006098455
-conditionprequestions:avg_time_of_prequestions -0.001742305 0.004591207</code></pre>
+Intercept                                       0.130236704 1.490516956
+conditionprequestions                          -0.264862867 0.481664421
+avg_time_of_prequestions                       -0.002470430 0.005964099
+conditionprequestions:avg_time_of_prequestions -0.001417653 0.004525515</code></pre>
 </div>
 </div>
 </section>
@@ -357,15 +482,15 @@ conditionprequestions:avg_time_of_prequestions -0.001742305 0.004591207</code></
 <div class="cell">
 <div class="cell-output cell-output-stdout">
 <pre><code>                                               Estimate    Est.Error
-Intercept                                  1.0362374190 0.2554176787
-conditionprequestions                      0.1967982975 0.1226744551
-time_answering_preqs                       0.0007402721 0.0010966017
-conditionprequestions:time_answering_preqs 0.0004149327 0.0006531831
-                                                   Q2.5       Q97.5
-Intercept                                   0.532965649 1.564462999
-conditionprequestions                      -0.027471573 0.447436409
-time_answering_preqs                       -0.001360563 0.003003712
-conditionprequestions:time_answering_preqs -0.000896321 0.001710659</code></pre>
+Intercept                                  1.0455267981 0.2605429634
+conditionprequestions                      0.1863621958 0.1188672167
+time_answering_preqs                       0.0006404681 0.0010993995
+conditionprequestions:time_answering_preqs 0.0004732468 0.0006551986
+                                                    Q2.5       Q97.5
+Intercept                                   0.5309638362 1.550658035
+conditionprequestions                      -0.0370204008 0.434759882
+time_answering_preqs                       -0.0015139699 0.002834161
+conditionprequestions:time_answering_preqs -0.0008180715 0.001769061</code></pre>
 </div>
 </div>
 </section>
@@ -374,15 +499,15 @@ conditionprequestions:time_answering_preqs -0.000896321 0.001710659</code></pre>
 <div class="cell">
 <div class="cell-output cell-output-stdout">
 <pre><code>                                            Estimate Est.Error       Q2.5
-Intercept                                  0.9967683 0.2254284  0.5556663
-conditionprequestions                      0.3863225 0.1026126  0.1891876
-answer_not_provided                        0.2771405 0.2237141 -0.1593261
-conditionprequestions:answer_not_provided -0.2336285 0.1346954 -0.4899040
+Intercept                                  1.0222817 0.2264354  0.5799692
+conditionprequestions                      0.3580046 0.1009772  0.1602963
+answer_not_provided                        0.2207364 0.2078552 -0.2006875
+conditionprequestions:answer_not_provided -0.1997599 0.1334326 -0.4557807
                                                Q97.5
-Intercept                                 1.44115627
-conditionprequestions                     0.60086447
-answer_not_provided                       0.70608303
-conditionprequestions:answer_not_provided 0.04325556</code></pre>
+Intercept                                 1.47459643
+conditionprequestions                     0.55774333
+answer_not_provided                       0.62109999
+conditionprequestions:answer_not_provided 0.06980636</code></pre>
 </div>
 </div>
 </section>
@@ -390,16 +515,16 @@ conditionprequestions:answer_not_provided 0.04325556</code></pre>
 <h3 class="anchored" data-anchor-id="require_memorization-does-any-prequestion-involve-memorization-of-a-wordtermphrase">require_memorization: Does any prequestion involve memorization of a word/term/phrase?</h3>
 <div class="cell">
 <div class="cell-output cell-output-stdout">
-<pre><code>                                            Estimate  Est.Error        Q2.5
-Intercept                                  1.0843210 0.21166843  0.65803078
-conditionprequestions                      0.2371520 0.07765417  0.09752128
-require_memorization                       0.7469446 0.87307554 -0.95971556
-conditionprequestions:require_memorization 0.5807440 0.46192121 -0.27991764
-                                               Q97.5
-Intercept                                  1.5002462
-conditionprequestions                      0.4016745
-require_memorization                       2.5226223
-conditionprequestions:require_memorization 1.5012307</code></pre>
+<pre><code>                                            Estimate  Est.Error       Q2.5
+Intercept                                  1.1141236 0.21012707  0.6920552
+conditionprequestions                      0.2395467 0.07619134  0.1015266
+require_memorization                       0.2151660 0.43621216 -0.6364844
+conditionprequestions:require_memorization 0.3458060 0.33676746 -0.3097383
+                                              Q97.5
+Intercept                                  1.524643
+conditionprequestions                      0.401559
+require_memorization                       1.056479
+conditionprequestions:require_memorization 1.017268</code></pre>
 </div>
 </div>
 </section>
@@ -407,16 +532,16 @@ conditionprequestions:require_memorization 1.5012307</code></pre>
 <h3 class="anchored" data-anchor-id="preq_difficulty-percent-correct-overall-on-the-prequestions-associated-with-the-video">preq_difficulty: percent correct (overall) on the prequestions associated with the video</h3>
 <div class="cell">
 <div class="cell-output cell-output-stdout">
-<pre><code>                                        Estimate Est.Error         Q2.5
-Intercept                              0.3438939 0.3884596 -0.411309074
-conditionprequestions                  0.4811758 0.2598282 -0.002194067
-preq_difficulty                        1.5159664 0.6423771  0.225769728
-conditionprequestions:preq_difficulty -0.4199715 0.4652783 -1.360869976
+<pre><code>                                         Estimate Est.Error        Q2.5
+Intercept                              0.86272561 0.2957645  0.29429106
+conditionprequestions                  0.28192026 0.1821148 -0.06757444
+preq_difficulty                        0.51946644 0.4076614 -0.28090048
+conditionprequestions:preq_difficulty -0.06230942 0.3203573 -0.70056746
                                           Q97.5
-Intercept                             1.0997589
-conditionprequestions                 1.0003168
-preq_difficulty                       2.7656987
-conditionprequestions:preq_difficulty 0.4595918</code></pre>
+Intercept                             1.4560099
+conditionprequestions                 0.6443488
+preq_difficulty                       1.3061200
+conditionprequestions:preq_difficulty 0.5688507</code></pre>
 </div>
 </div>
 </section>
@@ -487,18 +612,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }
     return false;
   }
-  const clipboard = new window.ClipboardJS('.code-copy-button', {
-    text: function(trigger) {
-      const codeEl = trigger.previousElementSibling.cloneNode(true);
-      for (const childEl of codeEl.children) {
-        if (isCodeAnnotation(childEl)) {
-          childEl.remove();
-        }
-      }
-      return codeEl.innerText;
-    }
-  });
-  clipboard.on('success', function(e) {
+  const onCopySuccess = function(e) {
     // button target
     const button = e.trigger;
     // don't keep focus
@@ -530,7 +644,29 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
     }, 1000);
     // clear code selection
     e.clearSelection();
+  }
+  const getTextToCopy = function(trigger) {
+      const codeEl = trigger.previousElementSibling.cloneNode(true);
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+  }
+  const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+    text: getTextToCopy
   });
+  clipboard.on('success', onCopySuccess);
+  if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+    // For code content inside modals, clipBoardJS needs to be initialized with a container option
+    // TODO: Check when it could be a function (https://github.com/zenorocha/clipboard.js/issues/860)
+    const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+      text: getTextToCopy,
+      container: window.document.getElementById('quarto-embedded-source-code-modal')
+    });
+    clipboardModal.on('success', onCopySuccess);
+  }
     var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
     var mailtoRegex = new RegExp(/^mailto:/);
       var filterRegex = new RegExp('/' + window.location.host + '/');
@@ -538,7 +674,7 @@ window.document.addEventListener("DOMContentLoaded", function (event) {
         return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
     }
     // Inspect non-navigation links and adorn them if external
- 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool)');
+ 	var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
     for (var i=0; i<links.length; i++) {
       const link = links[i];
       if (!isInternal(link.href)) {
