@@ -78,7 +78,7 @@ ggplot(raw_data_summary, aes(x=M, y=course_id, xmin=M-SE, xmax=M+SE))+
   geom_pointrange()+
   theme_minimal()+
   theme(panel.grid.major.y=element_blank())+
-  labs(x="Proption correct with prequestions - proportion correct without",
+  labs(x="Proportion correct with prequestions - proportion correct without",
        y="Class ID")
 ```
 
@@ -201,7 +201,7 @@ overall_estimate_forest_plot <- forest_plot_data %>%
 ggplot(forest_plot_data, aes(x = odds, y=id)) +
   stat_pointinterval()+
   stat_pointinterval(data=overall_estimate_forest_plot, shape=18, point_size=5)+
-  labs(x="Odds ratio for correct response with pre-questions / without pre-questions ", y="Class ID")+
+  labs(x="Odds ratio for correct response with prequestions / without prequestions ", y="Class ID")+
   scale_x_continuous(breaks=c(seq(0,1,0.1),seq(1,10,1)))+
   coord_trans(x = 'log10') +
   geom_vline(xintercept=1)+
@@ -219,9 +219,9 @@ ggplot(forest_plot_data, aes(x = odds, y=id)) +
 load('moderators.Rdata')
 ```
 
-## Exposure order
+## Class Level
 
-Note taking for myself: the idea here is that there are different assignments in each class, and exposure order is basically which assignment people got. So wouldn't we expect 0 fixed effect, since there's no reason to expect the first assignments to be systematically different from the second assignments across classes? Should this be a random class-level effect?
+### Exposure order
 
 ```{r}
 #| label: Exposure order data
@@ -242,6 +242,23 @@ exposure_order_model_data <- datFrm %>%
   mutate(condition = outcome_phase) %>%
   select(-trials_phase, -outcome_phase)
 
+```
+
+```{r}
+#| label: Exposure fixed effect
+#| include: false
+
+class_level_exposure_fit <- run_brms_model(
+  "class_level_exposure",
+  bf(score | trials(trials) ~ condition*exposure_order + (0 + condition + exposure_order | course_id) + (1 | course_id/participant_id)),
+  exposure_order_model_data,
+  priors
+)
+```
+
+```{r}
+#| echo: false
+fixef(class_level_exposure_fit)
 ```
 
 ```{r}
@@ -280,7 +297,7 @@ overall_estimate_forest_plot <- forest_plot_data %>%
 ggplot(forest_plot_data, aes(x = odds, y=id)) +
   stat_pointinterval()+
   stat_pointinterval(data=overall_estimate_forest_plot, shape=18, point_size=5)+
-  labs(x="Odds ratio for correct response with pre-questions / without pre-questions ", y="Class ID")+
+  labs(x="Odds ratio for correct response with prequestions / without prequestions ", y="Class ID")+
   scale_x_continuous(breaks=c(seq(0,1,0.1),seq(1,10,1)))+
   coord_trans(x = 'log10') +
   geom_vline(xintercept=1)+
@@ -288,7 +305,6 @@ ggplot(forest_plot_data, aes(x = odds, y=id)) +
   theme(panel.grid.major.y = element_blank(), panel.grid.minor.x = element_blank())
 ```
 
-## Class Level
 
 ```{r}
 #| label: Merge class level moderators
@@ -325,13 +341,15 @@ fixef(class_level_number_assignments_fit)
 
 student_level_model_data <- exposure_order_model_data %>%
   left_join(mod_student, by=join_by(participant_id, course_id)) %>%
-  mutate(pretest = pretest / 100)
-
+  mutate(pretest = pretest / 100) %>%
+  mutate(level = case_when(
+    level %in% c(6,7,8) ~ "middle school",
+    level %in% c(9,10,11,12) ~ "high school",
+    TRUE ~ "college"
+  ))
 ```
 
 ### Grade Level
-
-Question about this one: we can't nest this in classes, right? Because there are classes with all one grade level? And we're more interested in how this behaves at the class level?
 
 ```{r}
 #| label: student-level grade level moderator
@@ -391,8 +409,6 @@ fixef(student_level_major_fit)
 ```
 
 ### Prequestion Score
-
-*Question: what does it mean to get prequestion score in control condition*
 
 ```{r}
 #| label: student-level prequestion score moderator
@@ -714,40 +730,26 @@ exposure_level_preq_difficulty_fit <- run_brms_model(
 fixef(exposure_level_preq_difficulty_fit)
 ```
 
-# notes / misc
+# TODO list
 
-## ben questions
-
--   priors for model?
-
--   exposure order moderator
-
--   moderators as main effects or interactions or both?
-
-Fit class-level moderators using the model above, replacing exposure_order with class-level moderator.
-
-Use a different model for participant-level moderators.
-
-For assignment-level moderators, use assignment ID not nested in classes? Because there are only two assignments per class, nesting seems unhelpful. Instead allow for class-level intercept?
-
-Also fit a model where the outcome is whether/how much of the video they watch. Whether = \> 5% of the video. Prediction is that prequestions will affect whether students watch the video.
-
-------------------------------------------------------------------------
-
-I also wrote a script to organize everything.  As you know, I've felt uncomfortable with the piss poor documentation I provided about the ManyClasses2 moderators.  So here (attached, and also in the ManyClasses 2 folder in Dropbox), you'll find a script that grabs everything from OSF and organizes it into four different data frames:
-
--   **mod_class**: Moderators at the class-level (30 obs) - key is course_id
-
--   **mod_exposure**: Moderators at the exposure-level (60 obs; exposures are analogous to but distinct from "periods" in a repeated-measures design; in any case, here there are two "exposures" per class in this study) - keys are course_id + exposure
-
--   **mod_student**: Moderators at the student-level (1571 obs) - key is participant_id
-
--   **mod_submission**: Moderators at the level of each student's interactions with a treatment (3142 obs; two observations per student, one for each exposure)
-
-I hope this makes moderator analyses super-easy! 
-
-Note: Right now we only have one moderator at the class-level (the number of other graded assessments in the course).  Obviously we could also do analyses on consent rate, enrollment, semester, institution, etc...  But these are atheoretical, and we already understand class-level moderators to be underpowered, so I've not added them.  If you think I should add 'em to mod_class, just let me know.
-
-Appreciatively,
-
-Ben
+- [x] Figure 1: Fix spelling of "proption"
+- [x] Figure 3: "pre-questions" -> "prequestions" (for consistency)
+- [ ] On one or both figures, add to y-axis in addition to class id: N, pct correct prequestions, pct correct control, {any others}
+- [ ] Make pretty for publication
+- [x] Run a model where exposure order is a fixed effect – we anticipate that there will be no effect, and that this will provide support for our decision to include exposure order as a class-level random effect
+- [x] Change the "Level" outcome to a categorical variable:
+    level %in% c(6,7,8) ~ "middle school"
+    level %in% c(9,10,11,12) ~ "high school"
+    (else) true ~ "college"
+- [x] Rerun grade level model
+- [x] Use the priors from https://osf.io/5atq3
+- [x] Can you please add the component to the project site at: https://osf.io/t5ma3/? -- I don't want to accidentally set things up wrong.
+- [ ] Upload model fits to OSF
+- [ ] Simple models where "Percentage of video viewed" and "Did the student start the video at all?" are the outcomes (DVs), with condition as the IV and no interaction terms.
+- [ ] Limit to only those students who did initiate playback, and re-run the simple model above, where "Percentage of video viewed" is the DV and condition is the IV.
+- [ ] Models where "Did the student start the video at all?" is the DV, and where we include condition X moderator interactions.  For these, it doesn't really make sense to include any exposure-level interaction terms regarding the video (e.g., duration, was the question answered) because students didn't watch at least one video, but minimally we should measure the interaction with:
+    - [ ] Pretest
+    - [ ] Prequestion score
+    - [ ] In Major
+    - [ ] Grade level
+    - [ ] Submission time

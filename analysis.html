@@ -99,9 +99,34 @@ Figure&nbsp;2: Model estimates of the benefit of prequestions for each class, sh
 </section>
 <section id="moderators" class="level1">
 <h1>Moderators</h1>
-<section id="exposure-order" class="level2">
-<h2 class="anchored" data-anchor-id="exposure-order">Exposure order</h2>
-<p>Note taking for myself: the idea here is that there are different assignments in each class, and exposure order is basically which assignment people got. So wouldn’t we expect 0 fixed effect, since there’s no reason to expect the first assignments to be systematically different from the second assignments across classes? Should this be a random class-level effect?</p>
+<section id="class-level" class="level2">
+<h2 class="anchored" data-anchor-id="class-level">Class Level</h2>
+<section id="exposure-order" class="level3">
+<h3 class="anchored" data-anchor-id="exposure-order">Exposure order</h3>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>                                                                   Estimate
+Intercept                                                      1.1007931800
+conditionprequestions                                          0.2439874680
+exposure_orderprequestions_then_control                       -0.0013233325
+conditionprequestions:exposure_orderprequestions_then_control -0.0003760324
+                                                               Est.Error
+Intercept                                                     0.20413188
+conditionprequestions                                         0.08764960
+exposure_orderprequestions_then_control                       0.10924918
+conditionprequestions:exposure_orderprequestions_then_control 0.08274663
+                                                                     Q2.5
+Intercept                                                      0.69600872
+conditionprequestions                                          0.08246071
+exposure_orderprequestions_then_control                       -0.21196251
+conditionprequestions:exposure_orderprequestions_then_control -0.16016921
+                                                                  Q97.5
+Intercept                                                     1.5024016
+conditionprequestions                                         0.4243475
+exposure_orderprequestions_then_control                       0.2181863
+conditionprequestions:exposure_orderprequestions_then_control 0.1622860</code></pre>
+</div>
+</div>
 <div class="cell">
 <div class="cell-output-display">
 <div id="fig-overall-forest-plot-with-exposure-order" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -117,8 +142,6 @@ Figure&nbsp;3: Model estimates of the benefit of prequestions for each class, ta
 </div>
 </div>
 </section>
-<section id="class-level" class="level2">
-<h2 class="anchored" data-anchor-id="class-level">Class Level</h2>
 <section id="number-of-assignments" class="level3">
 <h3 class="anchored" data-anchor-id="number-of-assignments">Number of Assignments</h3>
 <div class="cell">
@@ -141,14 +164,22 @@ conditionprequestions:nbr_other_assessments -0.007988168 0.007809536</code></pre
 <h2 class="anchored" data-anchor-id="student-level">Student Level</h2>
 <section id="grade-level" class="level3">
 <h3 class="anchored" data-anchor-id="grade-level">Grade Level</h3>
-<p>Question about this one: we can’t nest this in classes, right? Because there are classes with all one grade level? And we’re more interested in how this behaves at the class level?</p>
 <div class="cell">
 <div class="cell-output cell-output-stdout">
-<pre><code>                              Estimate  Est.Error        Q2.5      Q97.5
-Intercept                   0.59011502 0.57525929 -0.54440694 1.72537011
-conditionprequestions       0.04522061 0.26015033 -0.46550282 0.56389167
-level                       0.04083317 0.04255271 -0.04250762 0.12478853
-conditionprequestions:level 0.01465074 0.01989930 -0.02455521 0.05482659</code></pre>
+<pre><code>                                           Estimate  Est.Error       Q2.5
+Intercept                                1.22418678 0.22602471  0.7816586
+conditionprequestions                    0.25644380 0.08321822  0.1106517
+levelhighschool                         -0.75895600 0.29249517 -1.3430223
+levelmiddleschool                        0.03421185 0.37527890 -0.7053774
+conditionprequestions:levelhighschool   -0.23454181 0.17090923 -0.5879975
+conditionprequestions:levelmiddleschool  0.13120626 0.20819988 -0.2818291
+                                              Q97.5
+Intercept                                1.67284359
+conditionprequestions                    0.43857778
+levelhighschool                         -0.18544938
+levelmiddleschool                        0.78148001
+conditionprequestions:levelhighschool    0.08498729
+conditionprequestions:levelmiddleschool  0.53287119</code></pre>
 </div>
 </div>
 </section>
@@ -179,7 +210,6 @@ conditionprequestions:in_major 0.06878901 0.1459336 -0.21320920 0.3674695</code>
 </section>
 <section id="prequestion-score" class="level3">
 <h3 class="anchored" data-anchor-id="prequestion-score">Prequestion Score</h3>
-<p><em>Question: what does it mean to get prequestion score in control condition</em></p>
 <div class="cell">
 <div class="cell-output cell-output-stdout">
 <pre><code>                                          Estimate Est.Error       Q2.5
@@ -392,32 +422,30 @@ conditionprequestions:preq_difficulty 0.5688507</code></pre>
 </section>
 </section>
 </section>
-<section id="notes-misc" class="level1">
-<h1>notes / misc</h1>
-<section id="ben-questions" class="level2">
-<h2 class="anchored" data-anchor-id="ben-questions">ben questions</h2>
-<ul>
-<li><p>priors for model?</p></li>
-<li><p>exposure order moderator</p></li>
-<li><p>moderators as main effects or interactions or both?</p></li>
+<section id="todo-list" class="level1">
+<h1>TODO list</h1>
+<ul class="task-list">
+<li><label><input type="checkbox" checked="">Figure 1: Fix spelling of “proption”</label></li>
+<li><label><input type="checkbox" checked="">Figure 3: “pre-questions” -&gt; “prequestions” (for consistency)</label></li>
+<li><label><input type="checkbox">On one or both figures, add to y-axis in addition to class id: N, pct correct prequestions, pct correct control, {any others}</label></li>
+<li><label><input type="checkbox">Make pretty for publication</label></li>
+<li><label><input type="checkbox" checked="">Run a model where exposure order is a fixed effect – we anticipate that there will be no effect, and that this will provide support for our decision to include exposure order as a class-level random effect</label></li>
+<li><label><input type="checkbox" checked="">Change the “Level” outcome to a categorical variable: level %in% c(6,7,8) ~ “middle school” level %in% c(9,10,11,12) ~ “high school” (else) true ~ “college”</label></li>
+<li><label><input type="checkbox" checked="">Rerun grade level model</label></li>
+<li><label><input type="checkbox" checked="">Use the priors from https://osf.io/5atq3</label></li>
+<li><label><input type="checkbox" checked="">Can you please add the component to the project site at: https://osf.io/t5ma3/? – I don’t want to accidentally set things up wrong.</label></li>
+<li><label><input type="checkbox">Upload model fits to OSF</label></li>
+<li><label><input type="checkbox">Simple models where “Percentage of video viewed” and “Did the student start the video at all?” are the outcomes (DVs), with condition as the IV and no interaction terms.</label></li>
+<li><label><input type="checkbox">Limit to only those students who did initiate playback, and re-run the simple model above, where “Percentage of video viewed” is the DV and condition is the IV.</label></li>
+<li><label><input type="checkbox">Models where “Did the student start the video at all?” is the DV, and where we include condition X moderator interactions. For these, it doesn’t really make sense to include any exposure-level interaction terms regarding the video (e.g., duration, was the question answered) because students didn’t watch at least one video, but minimally we should measure the interaction with:</label>
+<ul class="task-list">
+<li><label><input type="checkbox">Pretest</label></li>
+<li><label><input type="checkbox">Prequestion score</label></li>
+<li><label><input type="checkbox">In Major</label></li>
+<li><label><input type="checkbox">Grade level</label></li>
+<li><label><input type="checkbox">Submission time</label></li>
+</ul></li>
 </ul>
-<p>Fit class-level moderators using the model above, replacing exposure_order with class-level moderator.</p>
-<p>Use a different model for participant-level moderators.</p>
-<p>For assignment-level moderators, use assignment ID not nested in classes? Because there are only two assignments per class, nesting seems unhelpful. Instead allow for class-level intercept?</p>
-<p>Also fit a model where the outcome is whether/how much of the video they watch. Whether = &gt; 5% of the video. Prediction is that prequestions will affect whether students watch the video.</p>
-<hr>
-<p>I also wrote a script to organize everything.&nbsp; As you know, I’ve felt uncomfortable with the piss poor documentation I provided about the ManyClasses2 moderators.&nbsp; So here (attached, and also in the ManyClasses 2 folder in Dropbox), you’ll find a script that grabs everything from OSF and organizes it into four different data frames:</p>
-<ul>
-<li><p><strong>mod_class</strong>: Moderators at the class-level (30 obs) - key is course_id</p></li>
-<li><p><strong>mod_exposure</strong>: Moderators at the exposure-level (60 obs; exposures are analogous to but distinct from “periods” in a repeated-measures design; in any case, here there are two “exposures” per class in this study) - keys are course_id + exposure</p></li>
-<li><p><strong>mod_student</strong>: Moderators at the student-level (1571 obs) - key is participant_id</p></li>
-<li><p><strong>mod_submission</strong>: Moderators at the level of each student’s interactions with a treatment (3142 obs; two observations per student, one for each exposure)</p></li>
-</ul>
-<p>I hope this makes moderator analyses super-easy!&nbsp;</p>
-<p>Note: Right now we only have one moderator at the class-level (the number of other graded assessments in the course).&nbsp; Obviously we could also do analyses on consent rate, enrollment, semester, institution, etc…&nbsp; But these are atheoretical, and we already understand class-level moderators to be underpowered, so I’ve not added them.&nbsp; If you think I should add ’em to mod_class, just let me know.</p>
-<p>Appreciatively,</p>
-<p>Ben</p>
-</section>
 </section>
 
 </main>
