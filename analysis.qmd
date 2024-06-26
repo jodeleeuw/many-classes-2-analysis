@@ -88,7 +88,7 @@ ggplot(raw_data_summary, aes(x=M, y=course_id, xmin=M-SE, xmax=M+SE))+
 #| label: Helper function for running models
 #| include: false
 
-run_brms_model <- function(filename, formula, data, priors, bulk_ess_threshold=1000) {
+run_brms_model <- function(filename, formula, data, priors, bulk_ess_threshold=1000, family=binomial(link = "logit")) {
   
   cores_to_use <- 6
   
@@ -100,7 +100,7 @@ run_brms_model <- function(filename, formula, data, priors, bulk_ess_threshold=1
     fit <- brm(
       formula = formula,
       data = data,
-      family = binomial(link = "logit"),
+      family = family,
       chains = cores_to_use,
       iter = bulk_ess_threshold + 1000,
       warmup = 1000,
@@ -124,7 +124,7 @@ run_brms_model <- function(filename, formula, data, priors, bulk_ess_threshold=1
       new_fit <- brm(
         formula = formula,
         data = data,
-        family = binomial(link = "logit"),
+        family = family,
         chains = cores_to_use,
         iter = bulk_ess_threshold + 1000,
         warmup = 1000,
@@ -730,6 +730,77 @@ exposure_level_preq_difficulty_fit <- run_brms_model(
 fixef(exposure_level_preq_difficulty_fit)
 ```
 
+# Secondary Analyses
+
+## Percentage of video viewed
+
+### With all students
+
+```{r}
+#| label: percentage of video viewed all students
+#| include: false
+
+percent_viewed_fit <- run_brms_model(
+  "percent_viewed",
+  bf(viewpct ~ condition + (1 | course_id/participant_id) + (0 + exposure_order | course_id)),
+  submission_level_model_data,
+  priors,
+  family=gaussian(link="identity")
+)
+```
+
+```{r}
+#| echo: false
+
+fixef(percent_viewed_fit)
+```
+
+### With only students who initiated playback
+
+```{r}
+#| label: percentage of video viewed with only students who initiated playback
+#| include: false
+
+percent_viewed_initiated_fit <- run_brms_model(
+  "percent_viewed_initiated",
+  bf(viewpct ~ condition + (1 | course_id/participant_id) + (0 + exposure_order | course_id)),
+  submission_level_model_data %>%
+    filter(initiate_playback == 1),
+  priors,
+  family=gaussian(link="identity")
+)
+```
+
+```{r}
+#| echo: false
+
+fixef(percent_viewed_initiated_fit)
+```
+
+## Did the student start the video at all?
+
+```{r}
+#| label: percentage of video viewed
+#| include: false
+
+did_view_fit <- run_brms_model(
+  "did_view",
+  bf(initiate_playback ~ condition + (1 | course_id/participant_id) + (0 + exposure_order | course_id)),
+  submission_level_model_data,
+  priors,
+  family=bernoulli(link="logit")
+)
+```
+
+```{r}
+#| echo: false
+
+fixef(did_view_fit)
+```
+
+
+
+
 # TODO list
 
 - [x] Figure 1: Fix spelling of "proption"
@@ -745,8 +816,8 @@ fixef(exposure_level_preq_difficulty_fit)
 - [x] Use the priors from https://osf.io/5atq3
 - [x] Can you please add the component to the project site at: https://osf.io/t5ma3/? -- I don't want to accidentally set things up wrong.
 - [ ] Upload model fits to OSF
-- [ ] Simple models where "Percentage of video viewed" and "Did the student start the video at all?" are the outcomes (DVs), with condition as the IV and no interaction terms.
-- [ ] Limit to only those students who did initiate playback, and re-run the simple model above, where "Percentage of video viewed" is the DV and condition is the IV.
+- [x] Simple models where "Percentage of video viewed" and "Did the student start the video at all?" are the outcomes (DVs), with condition as the IV and no interaction terms.
+- [x] Limit to only those students who did initiate playback, and re-run the simple model above, where "Percentage of video viewed" is the DV and condition is the IV.
 - [ ] Models where "Did the student start the video at all?" is the DV, and where we include condition X moderator interactions.  For these, it doesn't really make sense to include any exposure-level interaction terms regarding the video (e.g., duration, was the question answered) because students didn't watch at least one video, but minimally we should measure the interaction with:
     - [ ] Pretest
     - [ ] Prequestion score

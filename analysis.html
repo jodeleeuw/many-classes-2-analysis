@@ -422,6 +422,42 @@ conditionprequestions:preq_difficulty 0.5688507</code></pre>
 </section>
 </section>
 </section>
+<section id="secondary-analyses" class="level1">
+<h1>Secondary Analyses</h1>
+<section id="percentage-of-video-viewed-1" class="level2">
+<h2 class="anchored" data-anchor-id="percentage-of-video-viewed-1">Percentage of video viewed</h2>
+<section id="with-all-students" class="level3">
+<h3 class="anchored" data-anchor-id="with-all-students">With all students</h3>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>                         Estimate  Est.Error        Q2.5       Q97.5
+Intercept              0.70200150 0.02785188  0.64813313  0.75720664
+conditionprequestions -0.04697233 0.01224958 -0.07083301 -0.02300978</code></pre>
+</div>
+</div>
+</section>
+<section id="with-only-students-who-initiated-playback" class="level3">
+<h3 class="anchored" data-anchor-id="with-only-students-who-initiated-playback">With only students who initiated playback</h3>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>                          Estimate  Est.Error        Q2.5      Q97.5
+Intercept              0.822165376 0.01834563  0.78656660 0.85854733
+conditionprequestions -0.008321776 0.01023105 -0.02851257 0.01180057</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="did-the-student-start-the-video-at-all-1" class="level2">
+<h2 class="anchored" data-anchor-id="did-the-student-start-the-video-at-all-1">Did the student start the video at all?</h2>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>                        Estimate Est.Error      Q2.5     Q97.5
+Intercept              2.4466944 0.2353174  2.002041  2.935341
+conditionprequestions -0.4290643 0.1040749 -0.638061 -0.227666</code></pre>
+</div>
+</div>
+</section>
+</section>
 <section id="todo-list" class="level1">
 <h1>TODO list</h1>
 <ul class="task-list">
@@ -435,8 +471,8 @@ conditionprequestions:preq_difficulty 0.5688507</code></pre>
 <li><label><input type="checkbox" checked="">Use the priors from https://osf.io/5atq3</label></li>
 <li><label><input type="checkbox" checked="">Can you please add the component to the project site at: https://osf.io/t5ma3/? – I don’t want to accidentally set things up wrong.</label></li>
 <li><label><input type="checkbox">Upload model fits to OSF</label></li>
-<li><label><input type="checkbox">Simple models where “Percentage of video viewed” and “Did the student start the video at all?” are the outcomes (DVs), with condition as the IV and no interaction terms.</label></li>
-<li><label><input type="checkbox">Limit to only those students who did initiate playback, and re-run the simple model above, where “Percentage of video viewed” is the DV and condition is the IV.</label></li>
+<li><label><input type="checkbox" checked="">Simple models where “Percentage of video viewed” and “Did the student start the video at all?” are the outcomes (DVs), with condition as the IV and no interaction terms.</label></li>
+<li><label><input type="checkbox" checked="">Limit to only those students who did initiate playback, and re-run the simple model above, where “Percentage of video viewed” is the DV and condition is the IV.</label></li>
 <li><label><input type="checkbox">Models where “Did the student start the video at all?” is the DV, and where we include condition X moderator interactions. For these, it doesn’t really make sense to include any exposure-level interaction terms regarding the video (e.g., duration, was the question answered) because students didn’t watch at least one video, but minimally we should measure the interaction with:</label>
 <ul class="task-list">
 <li><label><input type="checkbox">Pretest</label></li>
