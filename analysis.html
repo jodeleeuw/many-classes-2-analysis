@@ -430,9 +430,9 @@ conditionprequestions:preq_difficulty 0.5688507</code></pre>
 <h3 class="anchored" data-anchor-id="with-all-students">With all students</h3>
 <div class="cell">
 <div class="cell-output cell-output-stdout">
-<pre><code>                         Estimate  Est.Error        Q2.5       Q97.5
-Intercept              0.70200150 0.02785188  0.64813313  0.75720664
-conditionprequestions -0.04697233 0.01224958 -0.07083301 -0.02300978</code></pre>
+<pre><code>                        Estimate  Est.Error        Q2.5       Q97.5
+Intercept              0.7031037 0.02682922  0.64958241  0.75574697
+conditionprequestions -0.0494014 0.01579221 -0.08103898 -0.01880517</code></pre>
 </div>
 </div>
 </section>
@@ -440,9 +440,9 @@ conditionprequestions -0.04697233 0.01224958 -0.07083301 -0.02300978</code></pre
 <h3 class="anchored" data-anchor-id="with-only-students-who-initiated-playback">With only students who initiated playback</h3>
 <div class="cell">
 <div class="cell-output cell-output-stdout">
-<pre><code>                          Estimate  Est.Error        Q2.5      Q97.5
-Intercept              0.822165376 0.01834563  0.78656660 0.85854733
-conditionprequestions -0.008321776 0.01023105 -0.02851257 0.01180057</code></pre>
+<pre><code>                         Estimate  Est.Error        Q2.5      Q97.5
+Intercept              0.82403735 0.01791402  0.78854179 0.85995563
+conditionprequestions -0.01231315 0.01460721 -0.04153329 0.01669898</code></pre>
 </div>
 </div>
 </section>
@@ -451,11 +451,93 @@ conditionprequestions -0.008321776 0.01023105 -0.02851257 0.01180057</code></pre
 <h2 class="anchored" data-anchor-id="did-the-student-start-the-video-at-all-1">Did the student start the video at all?</h2>
 <div class="cell">
 <div class="cell-output cell-output-stdout">
-<pre><code>                        Estimate Est.Error      Q2.5     Q97.5
-Intercept              2.4466944 0.2353174  2.002041  2.935341
-conditionprequestions -0.4290643 0.1040749 -0.638061 -0.227666</code></pre>
+<pre><code>                        Estimate Est.Error       Q2.5     Q97.5
+Intercept              2.4649872 0.2398459  2.0202533  2.967505
+conditionprequestions -0.4200483 0.1431797 -0.7015849 -0.139487</code></pre>
 </div>
 </div>
+<section id="with-moderators" class="level3">
+<h3 class="anchored" data-anchor-id="with-moderators">With moderators</h3>
+<section id="pretest-score" class="level4">
+<h4 class="anchored" data-anchor-id="pretest-score">Pretest Score</h4>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>                                  Estimate Est.Error       Q2.5      Q97.5
+Intercept                     40.621609450 7.5763269 27.3361968 56.8421725
+conditionprequestions         -0.006319076 0.4278422 -0.8445475  0.8336104
+pretest                        0.076127399 0.4956168 -0.8930330  1.0539675
+conditionprequestions:pretest  0.033506077 0.4449616 -0.8335204  0.8985801</code></pre>
+</div>
+</div>
+</section>
+<section id="prequestion-score-1" class="level4">
+<h4 class="anchored" data-anchor-id="prequestion-score-1">Prequestion Score</h4>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>                                           Estimate Est.Error       Q2.5
+Intercept                               25.69609411 6.2648612 14.0831103
+conditionprequestions                   -0.01392554 0.4107134 -0.8274058
+prequestion_score                        0.17305135 0.4996430 -0.8042926
+conditionprequestions:prequestion_score  0.07720667 0.4669891 -0.8474428
+                                            Q97.5
+Intercept                               38.814013
+conditionprequestions                    0.792926
+prequestion_score                        1.150495
+conditionprequestions:prequestion_score  0.994122</code></pre>
+</div>
+</div>
+</section>
+<section id="in-major-1" class="level4">
+<h4 class="anchored" data-anchor-id="in-major-1">In Major</h4>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>                                   Estimate Est.Error       Q2.5      Q97.5
+Intercept                      41.753928702 7.3770233 28.8472623 57.4671759
+conditionprequestions          -0.001130117 0.4107576 -0.8114635  0.7976047
+in_major                        0.059166599 0.4995776 -0.9373990  1.0273579
+conditionprequestions:in_major  0.030360353 0.4546875 -0.8632521  0.9112385</code></pre>
+</div>
+</div>
+</section>
+<section id="grade-level-1" class="level4">
+<h4 class="anchored" data-anchor-id="grade-level-1">Grade Level</h4>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>                                            Estimate Est.Error       Q2.5
+Intercept                               40.812500497 7.3419025 28.1423535
+conditionprequestions                   -0.004290908 0.3930204 -0.7725066
+levelhighschool                         -0.002907641 0.4995653 -0.9885775
+levelmiddleschool                        0.026560769 0.4992325 -0.9454334
+conditionprequestions:levelhighschool    0.003576806 0.4866964 -0.9492006
+conditionprequestions:levelmiddleschool  0.013090982 0.4905051 -0.9309772
+                                             Q97.5
+Intercept                               57.1563439
+conditionprequestions                    0.7592926
+levelhighschool                          0.9713748
+levelmiddleschool                        1.0040439
+conditionprequestions:levelhighschool    0.9749841
+conditionprequestions:levelmiddleschool  0.9570077</code></pre>
+</div>
+</div>
+</section>
+<section id="submission-time-1" class="level4">
+<h4 class="anchored" data-anchor-id="submission-time-1">Submission Time</h4>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>                                               Estimate Est.Error       Q2.5
+Intercept                                   47.78721051 8.6449852 32.7172590
+conditionprequestions                       -0.01838202 0.4373749 -0.8768766
+submDaysBeforeDueDate                        0.29436847 0.4542654 -0.5942117
+conditionprequestions:submDaysBeforeDueDate  0.03522373 0.2310219 -0.4163474
+                                                 Q97.5
+Intercept                                   66.3780869
+conditionprequestions                        0.8541193
+submDaysBeforeDueDate                        1.1901129
+conditionprequestions:submDaysBeforeDueDate  0.5023528</code></pre>
+</div>
+</div>
+</section>
+</section>
 </section>
 </section>
 <section id="todo-list" class="level1">
@@ -473,13 +555,13 @@ conditionprequestions -0.4290643 0.1040749 -0.638061 -0.227666</code></pre>
 <li><label><input type="checkbox">Upload model fits to OSF</label></li>
 <li><label><input type="checkbox" checked="">Simple models where “Percentage of video viewed” and “Did the student start the video at all?” are the outcomes (DVs), with condition as the IV and no interaction terms.</label></li>
 <li><label><input type="checkbox" checked="">Limit to only those students who did initiate playback, and re-run the simple model above, where “Percentage of video viewed” is the DV and condition is the IV.</label></li>
-<li><label><input type="checkbox">Models where “Did the student start the video at all?” is the DV, and where we include condition X moderator interactions. For these, it doesn’t really make sense to include any exposure-level interaction terms regarding the video (e.g., duration, was the question answered) because students didn’t watch at least one video, but minimally we should measure the interaction with:</label>
+<li><label><input type="checkbox" checked="">Models where “Did the student start the video at all?” is the DV, and where we include condition X moderator interactions. For these, it doesn’t really make sense to include any exposure-level interaction terms regarding the video (e.g., duration, was the question answered) because students didn’t watch at least one video, but minimally we should measure the interaction with:</label>
 <ul class="task-list">
-<li><label><input type="checkbox">Pretest</label></li>
-<li><label><input type="checkbox">Prequestion score</label></li>
-<li><label><input type="checkbox">In Major</label></li>
-<li><label><input type="checkbox">Grade level</label></li>
-<li><label><input type="checkbox">Submission time</label></li>
+<li><label><input type="checkbox" checked="">Pretest</label></li>
+<li><label><input type="checkbox" checked="">Prequestion score</label></li>
+<li><label><input type="checkbox" checked="">In Major</label></li>
+<li><label><input type="checkbox" checked="">Grade level</label></li>
+<li><label><input type="checkbox" checked="">Submission time</label></li>
 </ul></li>
 </ul>
 </section>

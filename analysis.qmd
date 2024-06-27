@@ -741,8 +741,8 @@ fixef(exposure_level_preq_difficulty_fit)
 #| include: false
 
 percent_viewed_fit <- run_brms_model(
-  "percent_viewed",
-  bf(viewpct ~ condition + (1 | course_id/participant_id) + (0 + exposure_order | course_id)),
+  "secondary_percent_viewed",
+  bf(viewpct ~ condition + (1 | course_id/participant_id) + (0 + exposure_order + condition | course_id)),
   submission_level_model_data,
   priors,
   family=gaussian(link="identity")
@@ -762,8 +762,8 @@ fixef(percent_viewed_fit)
 #| include: false
 
 percent_viewed_initiated_fit <- run_brms_model(
-  "percent_viewed_initiated",
-  bf(viewpct ~ condition + (1 | course_id/participant_id) + (0 + exposure_order | course_id)),
+  "secondary_percent_viewed_initiated",
+  bf(viewpct ~ condition + (1 | course_id/participant_id) + (0 + exposure_order + condition | course_id)),
   submission_level_model_data %>%
     filter(initiate_playback == 1),
   priors,
@@ -784,8 +784,8 @@ fixef(percent_viewed_initiated_fit)
 #| include: false
 
 did_view_fit <- run_brms_model(
-  "did_view",
-  bf(initiate_playback ~ condition + (1 | course_id/participant_id) + (0 + exposure_order | course_id)),
+  "secondary_did_view",
+  bf(initiate_playback ~ condition + (1 | course_id/participant_id) + (0 + exposure_order + condition | course_id)),
   submission_level_model_data,
   priors,
   family=bernoulli(link="logit")
@@ -798,8 +798,120 @@ did_view_fit <- run_brms_model(
 fixef(did_view_fit)
 ```
 
+### With moderators
+
+```{r}
+#| label: Add initiate_playback to student-level model data
+#| include: false
+
+secondary_model_data <- student_level_model_data %>%
+  left_join(submission_level_model_data %>% group_by(participant_id) %>% slice_head(n=1) %>% select(participant_id, course_id, initiate_playback, submDaysBeforeDueDate) %>% ungroup(), by=join_by(participant_id, course_id))
+```
+
+#### Pretest Score
+
+```{r}
+#| label: Pretest moderator for iniated viewing
+#| include: false
+
+did_view_pretest_fit <- run_brms_model(
+  "secondary_did_view_pretest",
+  bf(initiate_playback ~ condition*pretest + (1 | course_id/participant_id) + (0 + exposure_order + pretest*condition | course_id)),
+  secondary_model_data,
+  priors,
+  family=bernoulli(link="logit")
+)
+```
 
 
+```{r}
+#| echo: false
+
+fixef(did_view_pretest_fit)
+```
+#### Prequestion Score
+
+```{r}
+#| label: Prequestion score moderator for iniated viewing
+#| include: false
+
+did_view_prequestion_score_fit <- run_brms_model(
+  "secondary_did_view_prequestion_score",
+  bf(initiate_playback ~ condition*prequestion_score + (1 | course_id/participant_id) + (0 + exposure_order + prequestion_score*condition | course_id)),
+  secondary_model_data,
+  priors,
+  family=bernoulli(link="logit")
+)
+```
+
+```{r}
+#| echo: false
+
+fixef(did_view_prequestion_score_fit)
+```
+
+#### In Major
+
+```{r}
+#| label: In major moderator for iniated viewing
+#| include: false
+
+did_view_major_fit <- run_brms_model(
+  "secondary_did_view_major",
+  bf(initiate_playback ~ condition*in_major + (1 | course_id/participant_id) + (0 + exposure_order + in_major*condition | course_id)),
+  secondary_model_data,
+  priors,
+  family=bernoulli(link="logit")
+)
+```
+
+```{r}
+#| echo: false
+
+fixef(did_view_major_fit)
+```
+
+#### Grade Level
+
+```{r}
+#| label: Grade level moderator for iniated viewing
+#| include: false
+
+did_view_grade_fit <- run_brms_model(
+  "secondary_did_view_grade",
+  bf(initiate_playback ~ condition*level + (1 | course_id/participant_id) + (0 + exposure_order + level*condition | course_id)),
+  secondary_model_data,
+  priors,
+  family=bernoulli(link="logit")
+)
+```
+
+```{r}
+#| echo: false
+
+fixef(did_view_grade_fit)
+```
+
+#### Submission Time
+
+```{r}
+#| label: Submission time moderator for iniated viewing
+#| include: false
+
+did_view_time_fit <- run_brms_model(
+  "secondary_did_view_time",
+  bf(initiate_playback ~ condition*submDaysBeforeDueDate + (1 | course_id/participant_id) + (0 + exposure_order + submDaysBeforeDueDate*condition | course_id)),
+  secondary_model_data,
+  priors,
+  family=bernoulli(link="logit")
+)
+```
+
+```{r}
+#| echo: false
+
+fixef(did_view_time_fit)
+```
 
 # TODO list
 
@@ -818,9 +930,9 @@ fixef(did_view_fit)
 - [ ] Upload model fits to OSF
 - [x] Simple models where "Percentage of video viewed" and "Did the student start the video at all?" are the outcomes (DVs), with condition as the IV and no interaction terms.
 - [x] Limit to only those students who did initiate playback, and re-run the simple model above, where "Percentage of video viewed" is the DV and condition is the IV.
-- [ ] Models where "Did the student start the video at all?" is the DV, and where we include condition X moderator interactions.  For these, it doesn't really make sense to include any exposure-level interaction terms regarding the video (e.g., duration, was the question answered) because students didn't watch at least one video, but minimally we should measure the interaction with:
-    - [ ] Pretest
-    - [ ] Prequestion score
-    - [ ] In Major
-    - [ ] Grade level
-    - [ ] Submission time
+- [x] Models where "Did the student start the video at all?" is the DV, and where we include condition X moderator interactions.  For these, it doesn't really make sense to include any exposure-level interaction terms regarding the video (e.g., duration, was the question answered) because students didn't watch at least one video, but minimally we should measure the interaction with:
+    - [x] Pretest
+    - [x] Prequestion score
+    - [x] In Major
+    - [x] Grade level
+    - [x] Submission time
