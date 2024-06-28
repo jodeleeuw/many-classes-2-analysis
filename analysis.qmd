@@ -805,7 +805,7 @@ fixef(did_view_fit)
 #| include: false
 
 secondary_model_data <- student_level_model_data %>%
-  left_join(submission_level_model_data %>% group_by(participant_id) %>% slice_head(n=1) %>% select(participant_id, course_id, initiate_playback, submDaysBeforeDueDate) %>% ungroup(), by=join_by(participant_id, course_id))
+  left_join(submission_level_model_data %>% group_by(participant_id)  %>% select(participant_id, condition, course_id, initiate_playback, submDaysBeforeDueDate) %>% ungroup(), by=join_by(participant_id, course_id, condition))
 ```
 
 #### Pretest Score
@@ -859,7 +859,7 @@ fixef(did_view_prequestion_score_fit)
 did_view_major_fit <- run_brms_model(
   "secondary_did_view_major",
   bf(initiate_playback ~ condition*in_major + (1 | course_id/participant_id) + (0 + exposure_order + in_major*condition | course_id)),
-  secondary_model_data,
+  secondary_model_data %>% mutate(initiate_playback = as.integer(initiate_playback)),
   priors,
   family=bernoulli(link="logit")
 )
