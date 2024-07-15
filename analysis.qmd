@@ -16,6 +16,8 @@ library(ggplot2)
 library(ggdist)
 library(bayesplot)
 library(forcats)
+library(stringr)
+library(gt)
 ```
 
 ```{r}
@@ -31,11 +33,86 @@ osf_retrieve_node("https://osf.io/t5ma3/") %>%
 #| label: Load data
 #| include: false
 
+load("data/processed_data.Rdata")
 load("data/analysis_set.Rdata")
 
 ```
 
-# Raw data visualization
+# Descriptives
+
+```{r}
+#| label: Descriptives
+#| include: false
+
+# How many classes?
+descriptives_num_classes <- length(unique(classes$course_id))
+
+# How many institutions/campuses?
+descriptives_num_institutions <- length(unique(classes$affiliation))
+
+# How many enrolled students?
+descriptives_enrolled_student_sum <- sum(experiment$enrollment_cnt)
+descriptives_enrolled_student_per_class_mean <- mean(experiment$enrollment_cnt)
+
+# How many consenting participants?
+descriptives_consenting_participant_sum <- length(unique(participants$participant_id))
+descriptives_consenting_participant_per_class_mean <- participants %>% 
+  group_by(course_id) %>% 
+  summarize(n=length(unique(participant_id))) %>% 
+  summarize(mean=mean(n)) %>% 
+  pull()
+descriptives_consenting_participant_per_class_sd <- participants %>% 
+  group_by(course_id) %>% 
+  summarize(n=length(unique(participant_id))) %>% 
+  summarize(sd=sd(n)) %>% 
+  pull()
+
+# How many consenting participants with outcome scores?
+descriptives_consenting_with_outcomes <- datFrm %>% summarize(sum=length(unique(participant_id)))
+```
+
+```{r}
+#| label: tbl-course-descriptives
+#| echo: false
+
+course_descriptives <- tibble(
+  course_id = classes %>% pull(course_id),
+  level = outcomes %>% 
+    filter(outcome_name == "Level") %>% 
+    select(course_id, outcome_score) %>% 
+    mutate(outcome_score = if_else(outcome_score < 6, outcome_score + 12, outcome_score)) %>% 
+    mutate(outcome_score = case_when(outcome_score <= 9 ~ "Middle School", outcome_score <= 12 ~ "High School", TRUE ~ "College")) %>%
+    group_by(course_id) %>%
+    slice(1) %>%
+    pull(outcome_score),
+  enrollment = experiment %>%
+    group_by(course_id) %>%
+    summarize(enrollment = sum(enrollment_cnt)) %>%
+    pull(enrollment),
+  participants = datFrm %>% 
+    group_by(course_id) %>% 
+    summarize(participants = length(unique(participant_id))) %>% 
+    pull(participants),
+  prequestion_accuracy = datFrm %>% 
+    group_by(course_id) %>% 
+    summarize(prequestion_accuracy = mean(prequestion_score)) %>% 
+    pull(prequestion_accuracy)
+) %>% 
+  mutate(participation_rate = participants / enrollment)
+
+gt(course_descriptives) %>%
+  grand_summary_rows(columns = c("enrollment", "participants", "prequestion_accuracy", "participation_rate"), fns = "mean")
+
+```
+
+
+```{r}
+#| label: tbl-institutions
+#| echo: false
+#| tbl-cap: Number of classes per institution
+
+classes %>% group_by(affiliation) %>% summarize(n=length(unique(course_id))) %>% gt()
+```
 
 ```{r}
 #| label: Prepare data
@@ -427,6 +504,25 @@ student_level_prequestion_score_fit <- run_brms_model(
 #| echo: false
 fixef(student_level_prequestion_score_fit)
 ```
+#### Visualization of the interaction between prequestion score and condition
+
+```{r}
+#| label: fig-prequestion-score
+#| echo: false
+
+condition_prequestion_viz_data <- student_level_model_data %>%
+  mutate(assessment_accuracy = score / trials) %>%
+  pivot_wider(names_from = condition, values_from = assessment_accuracy, id_cols = c(participant_id, course_id, prequestion_score)) %>%
+  mutate(improvement = prequestions - control) %>%
+  group_by(improvement, prequestion_score) %>%
+  summarize(n=n(), .groups="drop")
+
+ggplot(condition_prequestion_viz_data, aes(x=prequestion_score, y=improvement, size=n))+
+  geom_point()+
+  theme_bw()+
+  labs(x="\nProportion of prequestions answered correctly", y="Improvement in final assessment with prequestions\n")+
+  theme(panel.grid = element_blank())
+```
 
 ## Submission Level
 
@@ -730,6 +826,57 @@ exposure_level_preq_difficulty_fit <- run_brms_model(
 fixef(exposure_level_preq_difficulty_fit)
 ```
 
+##  Plot of moderator effects
+
+```{r}
+#| label: fig-moderator-effects
+#| fig-cap: Estimates of the interaction between prequestion condition and each moderator. The circle is the mean of the posterior, and the lines show the 95% highest-density interval. Estimates are in logits.
+#| echo: false
+
+moderator_fits <- list(
+  class_level_exposure_fit,
+  class_level_number_assignments_fit,
+  student_level_grade_level_fit,
+  student_level_pretest_fit,
+  student_level_major_fit,
+  student_level_prequestion_score_fit,
+  submission_level_percent_viewed_fit,
+  submission_level_initiate_playback_fit,
+  submission_level_n_events_fit,
+  submission_level_time_fit,
+  exposure_level_delay_fit,
+  exposure_level_pct_correct_fit,
+  exposure_level_video_length_fit,
+  exposure_level_avg_time_of_prequestions_fit,
+  exposure_level_time_answering_preqs_fit,
+  exposure_level_answer_not_provided_fit,
+  exposure_level_require_memorization_fit,
+  exposure_level_preq_difficulty_fit
+)
+
+moderator_model_info <- tibble(
+  model = as.character(1:length(moderator_fits)),
+  model_level = c("class", "class", "student", "student", "student", "student", "submission", "submission", "submission", "submission", "exposure", "exposure", "exposure", "exposure", "exposure", "exposure", "exposure", "exposure"),
+  effect = c("exposure_order", "nbr_other_assessments", "level", "pretest", "in_major", "prequestion_score", "viewpct", "initiate_playback", "nevents", "submDaysBeforeDueDate", "delay", "pct_correct", "video_length", "avg_time_of_prequestions", "time_answering_preqs", "answer_not_provided", "require_memorization", "preq_difficulty")
+)
+
+# extract the interaction term from each model, using the summary of the model
+
+moderator_forest_plot_data <- lapply(moderator_fits, function(fit){
+  fixef(fit) %>% as_tibble(rownames="Effect") %>%
+    filter(str_detect(Effect, ":")) %>%
+    select(Estimate, Q2.5, Q97.5)
+}) %>% bind_rows(.id="model") %>% left_join(moderator_model_info, by="model")
+
+ggplot(moderator_forest_plot_data, aes(x=Estimate, y=effect, xmin=Q2.5, xmax=Q97.5))+
+  geom_pointrange()+
+  facet_grid(model_level~., scales="free_y", space="free")+
+  theme_bw()+
+  theme(panel.grid.major.y=element_blank())+
+  labs(x="Effect estimate", y="Moderator")
+
+```
+
 # Secondary Analyses
 
 ## Percentage of video viewed
@@ -850,6 +997,37 @@ did_view_prequestion_score_fit <- run_brms_model(
 fixef(did_view_prequestion_score_fit)
 ```
 
+```{r}
+summary(did_view_prequestion_score_fit)
+```
+
+##### version 2
+
+```{r}
+#| label: Prequestion score moderator for iniated viewing v2
+#| include: false
+
+did_view_prequestion_score_v2_fit <- run_brms_model(
+  "secondary_did_view_prequestion_score_v2",
+  bf(initiate_playback ~ condition*prequestion_score + (1 | course_id/participant_id) + (0 + exposure_order + prequestion_score + condition | course_id)),
+  secondary_model_data,
+  priors,
+  family=bernoulli(link="logit")
+)
+```
+
+```{r}
+#| echo: false
+
+fixef(did_view_prequestion_score_v2_fit)
+```
+
+```{r}
+ggplot(secondary_model_data, aes(x=prequestion_score, y=initiate_playback, color=condition))+
+  geom_smooth(method="glm", method.args=list(family="binomial"), se=FALSE)+
+  facet_wrap(~course_id)
+```
+
 #### In Major
 
 ```{r}
@@ -928,6 +1106,8 @@ fixef(did_view_time_fit)
 - [x] Use the priors from https://osf.io/5atq3
 - [x] Can you please add the component to the project site at: https://osf.io/t5ma3/? -- I don't want to accidentally set things up wrong.
 - [ ] Upload model fits to OSF
+- [ ] Visualize the pre question score student level moderator
+- [ ] Remove the overall model, since we aren't using it anywhere. 
 - [x] Simple models where "Percentage of video viewed" and "Did the student start the video at all?" are the outcomes (DVs), with condition as the IV and no interaction terms.
 - [x] Limit to only those students who did initiate playback, and re-run the simple model above, where "Percentage of video viewed" is the DV and condition is the IV.
 - [x] Models where "Did the student start the video at all?" is the DV, and where we include condition X moderator interactions.  For these, it doesn't really make sense to include any exposure-level interaction terms regarding the video (e.g., duration, was the question answered) because students didn't watch at least one video, but minimally we should measure the interaction with:
