@@ -20,6 +20,40 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { display: inline-block; text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -62,8 +96,1261 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<section id="raw-data-visualization" class="level1">
-<h1>Raw data visualization</h1>
+<section id="descriptives" class="level1">
+<h1>Descriptives</h1>
+<div id="tbl-course-descriptives" class="cell anchored">
+<div class="cell-output-display">
+<div id="isggtdhymh" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#isggtdhymh table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#isggtdhymh thead, #isggtdhymh tbody, #isggtdhymh tfoot, #isggtdhymh tr, #isggtdhymh td, #isggtdhymh th {
+  border-style: none;
+}
+
+#isggtdhymh p {
+  margin: 0;
+  padding: 0;
+}
+
+#isggtdhymh .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#isggtdhymh .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#isggtdhymh .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#isggtdhymh .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#isggtdhymh .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#isggtdhymh .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#isggtdhymh .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#isggtdhymh .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#isggtdhymh .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#isggtdhymh .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#isggtdhymh .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#isggtdhymh .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#isggtdhymh .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#isggtdhymh .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#isggtdhymh .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#isggtdhymh .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#isggtdhymh .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#isggtdhymh .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#isggtdhymh .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#isggtdhymh .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#isggtdhymh .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#isggtdhymh .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#isggtdhymh .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#isggtdhymh .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#isggtdhymh .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#isggtdhymh .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#isggtdhymh .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#isggtdhymh .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#isggtdhymh .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#isggtdhymh .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#isggtdhymh .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#isggtdhymh .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#isggtdhymh .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#isggtdhymh .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#isggtdhymh .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#isggtdhymh .gt_left {
+  text-align: left;
+}
+
+#isggtdhymh .gt_center {
+  text-align: center;
+}
+
+#isggtdhymh .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#isggtdhymh .gt_font_normal {
+  font-weight: normal;
+}
+
+#isggtdhymh .gt_font_bold {
+  font-weight: bold;
+}
+
+#isggtdhymh .gt_font_italic {
+  font-style: italic;
+}
+
+#isggtdhymh .gt_super {
+  font-size: 65%;
+}
+
+#isggtdhymh .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#isggtdhymh .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#isggtdhymh .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#isggtdhymh .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#isggtdhymh .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#isggtdhymh .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#isggtdhymh .gt_indent_5 {
+  text-indent: 25px;
+}
+
+#isggtdhymh .katex-display {
+  display: inline-flex !important;
+  margin-bottom: 0.75em !important;
+}
+
+#isggtdhymh div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+  height: 0px !important;
+}
+</style>
+
+<table class="gt_table caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+<thead>
+<tr class="header gt_col_headings">
+<th class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col"></th>
+<th id="course_id" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">course_id</th>
+<th id="level" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">level</th>
+<th id="enrollment" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">enrollment</th>
+<th id="participants" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">participants</th>
+<th id="prequestion_accuracy" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">prequestion_accuracy</th>
+<th id="participation_rate" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">participation_rate</th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<td id="stub_1_1" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row"></td>
+<td class="gt_row gt_right" headers="stub_1_1 course_id">38</td>
+<td class="gt_row gt_left" headers="stub_1_1 level">College</td>
+<td class="gt_row gt_right" headers="stub_1_1 enrollment">105</td>
+<td class="gt_row gt_right" headers="stub_1_1 participants">87</td>
+<td class="gt_row gt_right" headers="stub_1_1 prequestion_accuracy">0.6551724</td>
+<td class="gt_row gt_right" headers="stub_1_1 participation_rate">0.8285714</td>
+</tr>
+<tr class="even">
+<td id="stub_1_2" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row"></td>
+<td class="gt_row gt_right" headers="stub_1_2 course_id">47</td>
+<td class="gt_row gt_left" headers="stub_1_2 level">College</td>
+<td class="gt_row gt_right" headers="stub_1_2 enrollment">33</td>
+<td class="gt_row gt_right" headers="stub_1_2 participants">5</td>
+<td class="gt_row gt_right" headers="stub_1_2 prequestion_accuracy">0.6000000</td>
+<td class="gt_row gt_right" headers="stub_1_2 participation_rate">0.1515152</td>
+</tr>
+<tr class="odd">
+<td id="stub_1_3" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row"></td>
+<td class="gt_row gt_right" headers="stub_1_3 course_id">48</td>
+<td class="gt_row gt_left" headers="stub_1_3 level">College</td>
+<td class="gt_row gt_right" headers="stub_1_3 enrollment">32</td>
+<td class="gt_row gt_right" headers="stub_1_3 participants">6</td>
+<td class="gt_row gt_right" headers="stub_1_3 prequestion_accuracy">0.6666667</td>
+<td class="gt_row gt_right" headers="stub_1_3 participation_rate">0.1875000</td>
+</tr>
+<tr class="even">
+<td id="stub_1_4" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row"></td>
+<td class="gt_row gt_right" headers="stub_1_4 course_id">49</td>
+<td class="gt_row gt_left" headers="stub_1_4 level">College</td>
+<td class="gt_row gt_right" headers="stub_1_4 enrollment">31</td>
+<td class="gt_row gt_right" headers="stub_1_4 participants">5</td>
+<td class="gt_row gt_right" headers="stub_1_4 prequestion_accuracy">0.5500000</td>
+<td class="gt_row gt_right" headers="stub_1_4 participation_rate">0.1612903</td>
+</tr>
+<tr class="odd">
+<td id="stub_1_5" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row"></td>
+<td class="gt_row gt_right" headers="stub_1_5 course_id">95</td>
+<td class="gt_row gt_left" headers="stub_1_5 level">College</td>
+<td class="gt_row gt_right" headers="stub_1_5 enrollment">44</td>
+<td class="gt_row gt_right" headers="stub_1_5 participants">14</td>
+<td class="gt_row gt_right" headers="stub_1_5 prequestion_accuracy">0.5178571</td>
+<td class="gt_row gt_right" headers="stub_1_5 participation_rate">0.3181818</td>
+</tr>
+<tr class="even">
+<td id="stub_1_6" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row"></td>
+<td class="gt_row gt_right" headers="stub_1_6 course_id">60</td>
+<td class="gt_row gt_left" headers="stub_1_6 level">College</td>
+<td class="gt_row gt_right" headers="stub_1_6 enrollment">40</td>
+<td class="gt_row gt_right" headers="stub_1_6 participants">16</td>
+<td class="gt_row gt_right" headers="stub_1_6 prequestion_accuracy">0.5781250</td>
+<td class="gt_row gt_right" headers="stub_1_6 participation_rate">0.4000000</td>
+</tr>
+<tr class="odd">
+<td id="stub_1_7" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row"></td>
+<td class="gt_row gt_right" headers="stub_1_7 course_id">62</td>
+<td class="gt_row gt_left" headers="stub_1_7 level">High School</td>
+<td class="gt_row gt_right" headers="stub_1_7 enrollment">916</td>
+<td class="gt_row gt_right" headers="stub_1_7 participants">278</td>
+<td class="gt_row gt_right" headers="stub_1_7 prequestion_accuracy">0.4978417</td>
+<td class="gt_row gt_right" headers="stub_1_7 participation_rate">0.3034934</td>
+</tr>
+<tr class="even">
+<td id="stub_1_8" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row"></td>
+<td class="gt_row gt_right" headers="stub_1_8 course_id">69</td>
+<td class="gt_row gt_left" headers="stub_1_8 level">College</td>
+<td class="gt_row gt_right" headers="stub_1_8 enrollment">62</td>
+<td class="gt_row gt_right" headers="stub_1_8 participants">48</td>
+<td class="gt_row gt_right" headers="stub_1_8 prequestion_accuracy">0.2812500</td>
+<td class="gt_row gt_right" headers="stub_1_8 participation_rate">0.7741935</td>
+</tr>
+<tr class="odd">
+<td id="stub_1_9" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row"></td>
+<td class="gt_row gt_right" headers="stub_1_9 course_id">98</td>
+<td class="gt_row gt_left" headers="stub_1_9 level">College</td>
+<td class="gt_row gt_right" headers="stub_1_9 enrollment">42</td>
+<td class="gt_row gt_right" headers="stub_1_9 participants">36</td>
+<td class="gt_row gt_right" headers="stub_1_9 prequestion_accuracy">0.3444444</td>
+<td class="gt_row gt_right" headers="stub_1_9 participation_rate">0.8571429</td>
+</tr>
+<tr class="even">
+<td id="stub_1_10" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row"></td>
+<td class="gt_row gt_right" headers="stub_1_10 course_id">113</td>
+<td class="gt_row gt_left" headers="stub_1_10 level">College</td>
+<td class="gt_row gt_right" headers="stub_1_10 enrollment">324</td>
+<td class="gt_row gt_right" headers="stub_1_10 participants">84</td>
+<td class="gt_row gt_right" headers="stub_1_10 prequestion_accuracy">0.7827381</td>
+<td class="gt_row gt_right" headers="stub_1_10 participation_rate">0.2592593</td>
+</tr>
+<tr class="odd">
+<td id="stub_1_11" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row"></td>
+<td class="gt_row gt_right" headers="stub_1_11 course_id">114</td>
+<td class="gt_row gt_left" headers="stub_1_11 level">College</td>
+<td class="gt_row gt_right" headers="stub_1_11 enrollment">17</td>
+<td class="gt_row gt_right" headers="stub_1_11 participants">13</td>
+<td class="gt_row gt_right" headers="stub_1_11 prequestion_accuracy">0.7692308</td>
+<td class="gt_row gt_right" headers="stub_1_11 participation_rate">0.7647059</td>
+</tr>
+<tr class="even">
+<td id="stub_1_12" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row"></td>
+<td class="gt_row gt_right" headers="stub_1_12 course_id">116</td>
+<td class="gt_row gt_left" headers="stub_1_12 level">College</td>
+<td class="gt_row gt_right" headers="stub_1_12 enrollment">196</td>
+<td class="gt_row gt_right" headers="stub_1_12 participants">91</td>
+<td class="gt_row gt_right" headers="stub_1_12 prequestion_accuracy">0.4368132</td>
+<td class="gt_row gt_right" headers="stub_1_12 participation_rate">0.4642857</td>
+</tr>
+<tr class="odd">
+<td id="stub_1_13" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row"></td>
+<td class="gt_row gt_right" headers="stub_1_13 course_id">122</td>
+<td class="gt_row gt_left" headers="stub_1_13 level">College</td>
+<td class="gt_row gt_right" headers="stub_1_13 enrollment">175</td>
+<td class="gt_row gt_right" headers="stub_1_13 participants">65</td>
+<td class="gt_row gt_right" headers="stub_1_13 prequestion_accuracy">0.4743590</td>
+<td class="gt_row gt_right" headers="stub_1_13 participation_rate">0.3714286</td>
+</tr>
+<tr class="even">
+<td id="stub_1_14" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row"></td>
+<td class="gt_row gt_right" headers="stub_1_14 course_id">99</td>
+<td class="gt_row gt_left" headers="stub_1_14 level">College</td>
+<td class="gt_row gt_right" headers="stub_1_14 enrollment">92</td>
+<td class="gt_row gt_right" headers="stub_1_14 participants">61</td>
+<td class="gt_row gt_right" headers="stub_1_14 prequestion_accuracy">0.7213115</td>
+<td class="gt_row gt_right" headers="stub_1_14 participation_rate">0.6630435</td>
+</tr>
+<tr class="odd">
+<td id="stub_1_15" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row"></td>
+<td class="gt_row gt_right" headers="stub_1_15 course_id">117</td>
+<td class="gt_row gt_left" headers="stub_1_15 level">College</td>
+<td class="gt_row gt_right" headers="stub_1_15 enrollment">190</td>
+<td class="gt_row gt_right" headers="stub_1_15 participants">44</td>
+<td class="gt_row gt_right" headers="stub_1_15 prequestion_accuracy">0.5227273</td>
+<td class="gt_row gt_right" headers="stub_1_15 participation_rate">0.2315789</td>
+</tr>
+<tr class="even">
+<td id="stub_1_16" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row"></td>
+<td class="gt_row gt_right" headers="stub_1_16 course_id">115</td>
+<td class="gt_row gt_left" headers="stub_1_16 level">College</td>
+<td class="gt_row gt_right" headers="stub_1_16 enrollment">22</td>
+<td class="gt_row gt_right" headers="stub_1_16 participants">15</td>
+<td class="gt_row gt_right" headers="stub_1_16 prequestion_accuracy">0.3500000</td>
+<td class="gt_row gt_right" headers="stub_1_16 participation_rate">0.6818182</td>
+</tr>
+<tr class="odd">
+<td id="stub_1_17" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row"></td>
+<td class="gt_row gt_right" headers="stub_1_17 course_id">191</td>
+<td class="gt_row gt_left" headers="stub_1_17 level">College</td>
+<td class="gt_row gt_right" headers="stub_1_17 enrollment">37</td>
+<td class="gt_row gt_right" headers="stub_1_17 participants">15</td>
+<td class="gt_row gt_right" headers="stub_1_17 prequestion_accuracy">0.6500000</td>
+<td class="gt_row gt_right" headers="stub_1_17 participation_rate">0.4054054</td>
+</tr>
+<tr class="even">
+<td id="stub_1_18" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row"></td>
+<td class="gt_row gt_right" headers="stub_1_18 course_id">135</td>
+<td class="gt_row gt_left" headers="stub_1_18 level">College</td>
+<td class="gt_row gt_right" headers="stub_1_18 enrollment">42</td>
+<td class="gt_row gt_right" headers="stub_1_18 participants">33</td>
+<td class="gt_row gt_right" headers="stub_1_18 prequestion_accuracy">0.7272727</td>
+<td class="gt_row gt_right" headers="stub_1_18 participation_rate">0.7857143</td>
+</tr>
+<tr class="odd">
+<td id="stub_1_19" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row"></td>
+<td class="gt_row gt_right" headers="stub_1_19 course_id">347</td>
+<td class="gt_row gt_left" headers="stub_1_19 level">College</td>
+<td class="gt_row gt_right" headers="stub_1_19 enrollment">117</td>
+<td class="gt_row gt_right" headers="stub_1_19 participants">73</td>
+<td class="gt_row gt_right" headers="stub_1_19 prequestion_accuracy">0.5513699</td>
+<td class="gt_row gt_right" headers="stub_1_19 participation_rate">0.6239316</td>
+</tr>
+<tr class="even">
+<td id="stub_1_20" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row"></td>
+<td class="gt_row gt_right" headers="stub_1_20 course_id">109</td>
+<td class="gt_row gt_left" headers="stub_1_20 level">High School</td>
+<td class="gt_row gt_right" headers="stub_1_20 enrollment">94</td>
+<td class="gt_row gt_right" headers="stub_1_20 participants">34</td>
+<td class="gt_row gt_right" headers="stub_1_20 prequestion_accuracy">0.3970588</td>
+<td class="gt_row gt_right" headers="stub_1_20 participation_rate">0.3617021</td>
+</tr>
+<tr class="odd">
+<td id="stub_1_21" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row"></td>
+<td class="gt_row gt_right" headers="stub_1_21 course_id">227</td>
+<td class="gt_row gt_left" headers="stub_1_21 level">Middle School</td>
+<td class="gt_row gt_right" headers="stub_1_21 enrollment">70</td>
+<td class="gt_row gt_right" headers="stub_1_21 participants">12</td>
+<td class="gt_row gt_right" headers="stub_1_21 prequestion_accuracy">0.0500000</td>
+<td class="gt_row gt_right" headers="stub_1_21 participation_rate">0.1714286</td>
+</tr>
+<tr class="even">
+<td id="stub_1_22" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row"></td>
+<td class="gt_row gt_right" headers="stub_1_22 course_id">97</td>
+<td class="gt_row gt_left" headers="stub_1_22 level">High School</td>
+<td class="gt_row gt_right" headers="stub_1_22 enrollment">107</td>
+<td class="gt_row gt_right" headers="stub_1_22 participants">21</td>
+<td class="gt_row gt_right" headers="stub_1_22 prequestion_accuracy">0.2976190</td>
+<td class="gt_row gt_right" headers="stub_1_22 participation_rate">0.1962617</td>
+</tr>
+<tr class="odd">
+<td id="stub_1_23" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row"></td>
+<td class="gt_row gt_right" headers="stub_1_23 course_id">163</td>
+<td class="gt_row gt_left" headers="stub_1_23 level">Middle School</td>
+<td class="gt_row gt_right" headers="stub_1_23 enrollment">48</td>
+<td class="gt_row gt_right" headers="stub_1_23 participants">30</td>
+<td class="gt_row gt_right" headers="stub_1_23 prequestion_accuracy">0.5416667</td>
+<td class="gt_row gt_right" headers="stub_1_23 participation_rate">0.6250000</td>
+</tr>
+<tr class="even">
+<td id="stub_1_24" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row"></td>
+<td class="gt_row gt_right" headers="stub_1_24 course_id">346</td>
+<td class="gt_row gt_left" headers="stub_1_24 level">Middle School</td>
+<td class="gt_row gt_right" headers="stub_1_24 enrollment">71</td>
+<td class="gt_row gt_right" headers="stub_1_24 participants">13</td>
+<td class="gt_row gt_right" headers="stub_1_24 prequestion_accuracy">0.1538462</td>
+<td class="gt_row gt_right" headers="stub_1_24 participation_rate">0.1830986</td>
+</tr>
+<tr class="odd">
+<td id="stub_1_25" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row"></td>
+<td class="gt_row gt_right" headers="stub_1_25 course_id">170</td>
+<td class="gt_row gt_left" headers="stub_1_25 level">High School</td>
+<td class="gt_row gt_right" headers="stub_1_25 enrollment">31</td>
+<td class="gt_row gt_right" headers="stub_1_25 participants">18</td>
+<td class="gt_row gt_right" headers="stub_1_25 prequestion_accuracy">0.6944444</td>
+<td class="gt_row gt_right" headers="stub_1_25 participation_rate">0.5806452</td>
+</tr>
+<tr class="even">
+<td id="stub_1_26" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row"></td>
+<td class="gt_row gt_right" headers="stub_1_26 course_id">289</td>
+<td class="gt_row gt_left" headers="stub_1_26 level">Middle School</td>
+<td class="gt_row gt_right" headers="stub_1_26 enrollment">94</td>
+<td class="gt_row gt_right" headers="stub_1_26 participants">86</td>
+<td class="gt_row gt_right" headers="stub_1_26 prequestion_accuracy">0.5523256</td>
+<td class="gt_row gt_right" headers="stub_1_26 participation_rate">0.9148936</td>
+</tr>
+<tr class="odd">
+<td id="stub_1_27" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row"></td>
+<td class="gt_row gt_right" headers="stub_1_27 course_id">146</td>
+<td class="gt_row gt_left" headers="stub_1_27 level">High School</td>
+<td class="gt_row gt_right" headers="stub_1_27 enrollment">20</td>
+<td class="gt_row gt_right" headers="stub_1_27 participants">16</td>
+<td class="gt_row gt_right" headers="stub_1_27 prequestion_accuracy">0.4156250</td>
+<td class="gt_row gt_right" headers="stub_1_27 participation_rate">0.8000000</td>
+</tr>
+<tr class="even">
+<td id="stub_1_28" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row"></td>
+<td class="gt_row gt_right" headers="stub_1_28 course_id">226</td>
+<td class="gt_row gt_left" headers="stub_1_28 level">Middle School</td>
+<td class="gt_row gt_right" headers="stub_1_28 enrollment">51</td>
+<td class="gt_row gt_right" headers="stub_1_28 participants">36</td>
+<td class="gt_row gt_right" headers="stub_1_28 prequestion_accuracy">0.5486111</td>
+<td class="gt_row gt_right" headers="stub_1_28 participation_rate">0.7058824</td>
+</tr>
+<tr class="odd">
+<td id="stub_1_29" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row"></td>
+<td class="gt_row gt_right" headers="stub_1_29 course_id">160</td>
+<td class="gt_row gt_left" headers="stub_1_29 level">College</td>
+<td class="gt_row gt_right" headers="stub_1_29 enrollment">113</td>
+<td class="gt_row gt_right" headers="stub_1_29 participants">77</td>
+<td class="gt_row gt_right" headers="stub_1_29 prequestion_accuracy">0.6389610</td>
+<td class="gt_row gt_right" headers="stub_1_29 participation_rate">0.6814159</td>
+</tr>
+<tr class="even">
+<td id="stub_1_30" class="gt_row gt_left gt_stub" data-quarto-table-cell-role="th" scope="row"></td>
+<td class="gt_row gt_right" headers="stub_1_30 course_id">174</td>
+<td class="gt_row gt_left" headers="stub_1_30 level">College</td>
+<td class="gt_row gt_right" headers="stub_1_30 enrollment">291</td>
+<td class="gt_row gt_right" headers="stub_1_30 participants">239</td>
+<td class="gt_row gt_right" headers="stub_1_30 prequestion_accuracy">0.5355649</td>
+<td class="gt_row gt_right" headers="stub_1_30 participation_rate">0.8213058</td>
+</tr>
+<tr class="odd">
+<td id="grand_summary_stub_1" class="gt_row gt_left gt_stub gt_grand_summary_row gt_first_grand_summary_row gt_last_summary_row" data-quarto-table-cell-role="th" scope="row">mean</td>
+<td class="gt_row gt_right gt_grand_summary_row gt_first_grand_summary_row gt_last_summary_row" headers="grand_summary_stub_1 course_id">—</td>
+<td class="gt_row gt_left gt_grand_summary_row gt_first_grand_summary_row gt_last_summary_row" headers="grand_summary_stub_1 level">—</td>
+<td class="gt_row gt_right gt_grand_summary_row gt_first_grand_summary_row gt_last_summary_row" headers="grand_summary_stub_1 enrollment">116.9</td>
+<td class="gt_row gt_right gt_grand_summary_row gt_first_grand_summary_row gt_last_summary_row" headers="grand_summary_stub_1 participants">52.36667</td>
+<td class="gt_row gt_right gt_grand_summary_row gt_first_grand_summary_row gt_last_summary_row" headers="grand_summary_stub_1 prequestion_accuracy">0.5167634</td>
+<td class="gt_row gt_right gt_grand_summary_row gt_first_grand_summary_row gt_last_summary_row" headers="grand_summary_stub_1 participation_rate">0.5091565</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+<div class="cell">
+<div id="tbl-institutions" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-institutions-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;1: Number of classes per institution
+</figcaption>
+<div aria-describedby="tbl-institutions-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<div id="ugirztzbjc" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#ugirztzbjc table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#ugirztzbjc thead, #ugirztzbjc tbody, #ugirztzbjc tfoot, #ugirztzbjc tr, #ugirztzbjc td, #ugirztzbjc th {
+  border-style: none;
+}
+
+#ugirztzbjc p {
+  margin: 0;
+  padding: 0;
+}
+
+#ugirztzbjc .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#ugirztzbjc .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#ugirztzbjc .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#ugirztzbjc .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#ugirztzbjc .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#ugirztzbjc .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#ugirztzbjc .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#ugirztzbjc .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#ugirztzbjc .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#ugirztzbjc .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#ugirztzbjc .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#ugirztzbjc .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#ugirztzbjc .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#ugirztzbjc .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#ugirztzbjc .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#ugirztzbjc .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#ugirztzbjc .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#ugirztzbjc .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#ugirztzbjc .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#ugirztzbjc .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#ugirztzbjc .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#ugirztzbjc .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#ugirztzbjc .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#ugirztzbjc .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#ugirztzbjc .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#ugirztzbjc .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#ugirztzbjc .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#ugirztzbjc .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#ugirztzbjc .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#ugirztzbjc .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#ugirztzbjc .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#ugirztzbjc .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#ugirztzbjc .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#ugirztzbjc .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#ugirztzbjc .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#ugirztzbjc .gt_left {
+  text-align: left;
+}
+
+#ugirztzbjc .gt_center {
+  text-align: center;
+}
+
+#ugirztzbjc .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#ugirztzbjc .gt_font_normal {
+  font-weight: normal;
+}
+
+#ugirztzbjc .gt_font_bold {
+  font-weight: bold;
+}
+
+#ugirztzbjc .gt_font_italic {
+  font-style: italic;
+}
+
+#ugirztzbjc .gt_super {
+  font-size: 65%;
+}
+
+#ugirztzbjc .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#ugirztzbjc .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#ugirztzbjc .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#ugirztzbjc .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#ugirztzbjc .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#ugirztzbjc .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#ugirztzbjc .gt_indent_5 {
+  text-indent: 25px;
+}
+
+#ugirztzbjc .katex-display {
+  display: inline-flex !important;
+  margin-bottom: 0.75em !important;
+}
+
+#ugirztzbjc div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+  height: 0px !important;
+}
+</style>
+
+<table class="gt_table do-not-create-environment cell caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+<thead>
+<tr class="header gt_col_headings">
+<th id="affiliation" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">affiliation</th>
+<th id="n" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">n</th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<td class="gt_row gt_left" headers="affiliation">IUB</td>
+<td class="gt_row gt_right" headers="n">6</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="affiliation">IUE</td>
+<td class="gt_row gt_right" headers="n">1</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="affiliation">IUP</td>
+<td class="gt_row gt_right" headers="n">3</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="affiliation">IUS</td>
+<td class="gt_row gt_right" headers="n">2</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="affiliation">SFY</td>
+<td class="gt_row gt_right" headers="n">7</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="affiliation">UFL</td>
+<td class="gt_row gt_right" headers="n">6</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="affiliation">UNL</td>
+<td class="gt_row gt_right" headers="n">5</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</figure>
+</div>
+</div>
 <div class="cell">
 <div class="cell-output-display">
 <div id="fig-raw-data" class="quarto-float quarto-figure quarto-figure-center anchored">
@@ -224,6 +1511,22 @@ prequestion_score                       0.6257440
 conditionprequestions:prequestion_score 1.1278229</code></pre>
 </div>
 </div>
+<section id="visualization-of-the-interaction-between-prequestion-score-and-condition" class="level4">
+<h4 class="anchored" data-anchor-id="visualization-of-the-interaction-between-prequestion-score-and-condition">Visualization of the interaction between prequestion score and condition</h4>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-prequestion-score" class="quarto-float quarto-figure quarto-figure-center anchored" width="672">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-prequestion-score-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="analysis_files/figure-html/fig-prequestion-score-1.png" id="fig-prequestion-score" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig quarto-uncaptioned" id="fig-prequestion-score-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
 </section>
 </section>
 <section id="submission-level" class="level2">
@@ -421,6 +1724,23 @@ conditionprequestions:preq_difficulty 0.5688507</code></pre>
 </div>
 </section>
 </section>
+<section id="plot-of-moderator-effects" class="level2">
+<h2 class="anchored" data-anchor-id="plot-of-moderator-effects">Plot of moderator effects</h2>
+<div class="cell">
+<div class="cell-output-display">
+<div id="fig-moderator-effects" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-moderator-effects-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="analysis_files/figure-html/fig-moderator-effects-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-moderator-effects-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;5: Estimates of the interaction between prequestion condition and each moderator. The circle is the mean of the posterior, and the lines show the 95% highest-density interval. Estimates are in logits.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
 </section>
 <section id="secondary-analyses" class="level1">
 <h1>Secondary Analyses</h1>
@@ -486,6 +1806,212 @@ prequestion_score                        1.3739702
 conditionprequestions:prequestion_score  1.1964479</code></pre>
 </div>
 </div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb24"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1" aria-hidden="true" tabindex="-1"></a><span class="fu">summary</span>(did_view_prequestion_score_fit)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code> Family: bernoulli 
+  Links: mu = logit 
+Formula: initiate_playback ~ condition * prequestion_score + (1 | course_id/participant_id) + (0 + exposure_order + prequestion_score * condition | course_id) 
+   Data: data (Number of observations: 3142) 
+  Draws: 6 chains, each with iter = 2000; warmup = 1000; thin = 1;
+         total post-warmup draws = 6000
+
+Multilevel Hyperparameters:
+~course_id (Number of levels: 30) 
+                                                                                     Estimate
+sd(Intercept)                                                                            0.88
+sd(exposure_ordercontrol_then_prequestion)                                               0.43
+sd(exposure_orderprequestions_then_control)                                              0.38
+sd(prequestion_score)                                                                    0.50
+sd(conditionprequestions)                                                                0.87
+sd(prequestion_score:conditionprequestions)                                              1.31
+cor(exposure_ordercontrol_then_prequestion,exposure_orderprequestions_then_control)      0.24
+cor(exposure_ordercontrol_then_prequestion,prequestion_score)                           -0.07
+cor(exposure_orderprequestions_then_control,prequestion_score)                          -0.00
+cor(exposure_ordercontrol_then_prequestion,conditionprequestions)                        0.08
+cor(exposure_orderprequestions_then_control,conditionprequestions)                       0.02
+cor(prequestion_score,conditionprequestions)                                            -0.11
+cor(exposure_ordercontrol_then_prequestion,prequestion_score:conditionprequestions)     -0.07
+cor(exposure_orderprequestions_then_control,prequestion_score:conditionprequestions)    -0.07
+cor(prequestion_score,prequestion_score:conditionprequestions)                          -0.02
+cor(conditionprequestions,prequestion_score:conditionprequestions)                      -0.67
+                                                                                     Est.Error
+sd(Intercept)                                                                             0.25
+sd(exposure_ordercontrol_then_prequestion)                                                0.25
+sd(exposure_orderprequestions_then_control)                                               0.23
+sd(prequestion_score)                                                                     0.32
+sd(conditionprequestions)                                                                 0.28
+sd(prequestion_score:conditionprequestions)                                               0.43
+cor(exposure_ordercontrol_then_prequestion,exposure_orderprequestions_then_control)       0.42
+cor(exposure_ordercontrol_then_prequestion,prequestion_score)                             0.41
+cor(exposure_orderprequestions_then_control,prequestion_score)                            0.40
+cor(exposure_ordercontrol_then_prequestion,conditionprequestions)                         0.37
+cor(exposure_orderprequestions_then_control,conditionprequestions)                        0.38
+cor(prequestion_score,conditionprequestions)                                              0.39
+cor(exposure_ordercontrol_then_prequestion,prequestion_score:conditionprequestions)       0.37
+cor(exposure_orderprequestions_then_control,prequestion_score:conditionprequestions)      0.38
+cor(prequestion_score,prequestion_score:conditionprequestions)                            0.38
+cor(conditionprequestions,prequestion_score:conditionprequestions)                        0.22
+                                                                                     l-95% CI
+sd(Intercept)                                                                            0.38
+sd(exposure_ordercontrol_then_prequestion)                                               0.05
+sd(exposure_orderprequestions_then_control)                                              0.05
+sd(prequestion_score)                                                                    0.06
+sd(conditionprequestions)                                                                0.36
+sd(prequestion_score:conditionprequestions)                                              0.54
+cor(exposure_ordercontrol_then_prequestion,exposure_orderprequestions_then_control)     -0.64
+cor(exposure_ordercontrol_then_prequestion,prequestion_score)                           -0.79
+cor(exposure_orderprequestions_then_control,prequestion_score)                          -0.75
+cor(exposure_ordercontrol_then_prequestion,conditionprequestions)                       -0.65
+cor(exposure_orderprequestions_then_control,conditionprequestions)                      -0.71
+cor(prequestion_score,conditionprequestions)                                            -0.79
+cor(exposure_ordercontrol_then_prequestion,prequestion_score:conditionprequestions)     -0.73
+cor(exposure_orderprequestions_then_control,prequestion_score:conditionprequestions)    -0.75
+cor(prequestion_score,prequestion_score:conditionprequestions)                          -0.73
+cor(conditionprequestions,prequestion_score:conditionprequestions)                      -0.94
+                                                                                     u-95% CI
+sd(Intercept)                                                                            1.38
+sd(exposure_ordercontrol_then_prequestion)                                               1.01
+sd(exposure_orderprequestions_then_control)                                              0.93
+sd(prequestion_score)                                                                    1.26
+sd(conditionprequestions)                                                                1.49
+sd(prequestion_score:conditionprequestions)                                              2.23
+cor(exposure_ordercontrol_then_prequestion,exposure_orderprequestions_then_control)      0.90
+cor(exposure_ordercontrol_then_prequestion,prequestion_score)                            0.71
+cor(exposure_orderprequestions_then_control,prequestion_score)                           0.75
+cor(exposure_ordercontrol_then_prequestion,conditionprequestions)                        0.74
+cor(exposure_orderprequestions_then_control,conditionprequestions)                       0.73
+cor(prequestion_score,conditionprequestions)                                             0.66
+cor(exposure_ordercontrol_then_prequestion,prequestion_score:conditionprequestions)      0.65
+cor(exposure_orderprequestions_then_control,prequestion_score:conditionprequestions)     0.67
+cor(prequestion_score,prequestion_score:conditionprequestions)                           0.71
+cor(conditionprequestions,prequestion_score:conditionprequestions)                      -0.08
+                                                                                     Rhat
+sd(Intercept)                                                                        1.00
+sd(exposure_ordercontrol_then_prequestion)                                           1.00
+sd(exposure_orderprequestions_then_control)                                          1.01
+sd(prequestion_score)                                                                1.00
+sd(conditionprequestions)                                                            1.00
+sd(prequestion_score:conditionprequestions)                                          1.00
+cor(exposure_ordercontrol_then_prequestion,exposure_orderprequestions_then_control)  1.00
+cor(exposure_ordercontrol_then_prequestion,prequestion_score)                        1.00
+cor(exposure_orderprequestions_then_control,prequestion_score)                       1.00
+cor(exposure_ordercontrol_then_prequestion,conditionprequestions)                    1.00
+cor(exposure_orderprequestions_then_control,conditionprequestions)                   1.00
+cor(prequestion_score,conditionprequestions)                                         1.00
+cor(exposure_ordercontrol_then_prequestion,prequestion_score:conditionprequestions)  1.00
+cor(exposure_orderprequestions_then_control,prequestion_score:conditionprequestions) 1.00
+cor(prequestion_score,prequestion_score:conditionprequestions)                       1.00
+cor(conditionprequestions,prequestion_score:conditionprequestions)                   1.00
+                                                                                     Bulk_ESS
+sd(Intercept)                                                                            1213
+sd(exposure_ordercontrol_then_prequestion)                                               1123
+sd(exposure_orderprequestions_then_control)                                              1334
+sd(prequestion_score)                                                                    2002
+sd(conditionprequestions)                                                                1919
+sd(prequestion_score:conditionprequestions)                                              1898
+cor(exposure_ordercontrol_then_prequestion,exposure_orderprequestions_then_control)      1708
+cor(exposure_ordercontrol_then_prequestion,prequestion_score)                            3786
+cor(exposure_orderprequestions_then_control,prequestion_score)                           2691
+cor(exposure_ordercontrol_then_prequestion,conditionprequestions)                        1584
+cor(exposure_orderprequestions_then_control,conditionprequestions)                       1596
+cor(prequestion_score,conditionprequestions)                                             1493
+cor(exposure_ordercontrol_then_prequestion,prequestion_score:conditionprequestions)      1766
+cor(exposure_orderprequestions_then_control,prequestion_score:conditionprequestions)     1604
+cor(prequestion_score,prequestion_score:conditionprequestions)                           1854
+cor(conditionprequestions,prequestion_score:conditionprequestions)                       3001
+                                                                                     Tail_ESS
+sd(Intercept)                                                                             909
+sd(exposure_ordercontrol_then_prequestion)                                               2090
+sd(exposure_orderprequestions_then_control)                                              2155
+sd(prequestion_score)                                                                    2939
+sd(conditionprequestions)                                                                2443
+sd(prequestion_score:conditionprequestions)                                              1881
+cor(exposure_ordercontrol_then_prequestion,exposure_orderprequestions_then_control)      3777
+cor(exposure_ordercontrol_then_prequestion,prequestion_score)                            4361
+cor(exposure_orderprequestions_then_control,prequestion_score)                           4215
+cor(exposure_ordercontrol_then_prequestion,conditionprequestions)                        2595
+cor(exposure_orderprequestions_then_control,conditionprequestions)                       2630
+cor(prequestion_score,conditionprequestions)                                             2797
+cor(exposure_ordercontrol_then_prequestion,prequestion_score:conditionprequestions)      2778
+cor(exposure_orderprequestions_then_control,prequestion_score:conditionprequestions)     2268
+cor(prequestion_score,prequestion_score:conditionprequestions)                           3347
+cor(conditionprequestions,prequestion_score:conditionprequestions)                       3242
+
+~course_id:participant_id (Number of levels: 1571) 
+              Estimate Est.Error l-95% CI u-95% CI Rhat Bulk_ESS Tail_ESS
+sd(Intercept)     1.40      0.15     1.13     1.69 1.00     1194     2442
+
+Regression Coefficients:
+                                        Estimate Est.Error l-95% CI u-95% CI
+Intercept                                   2.00      0.27     1.49     2.55
+conditionprequestions                      -0.61      0.23    -1.06    -0.16
+prequestion_score                           0.87      0.26     0.34     1.37
+conditionprequestions:prequestion_score     0.56      0.33    -0.11     1.20
+                                        Rhat Bulk_ESS Tail_ESS
+Intercept                               1.00     3056     3620
+conditionprequestions                   1.00     4054     4318
+prequestion_score                       1.00     5282     3946
+conditionprequestions:prequestion_score 1.00     4775     4694
+
+Draws were sampled using sampling(NUTS). For each parameter, Bulk_ESS
+and Tail_ESS are effective sample size measures, and Rhat is the potential
+scale reduction factor on split chains (at convergence, Rhat = 1).</code></pre>
+</div>
+</div>
+<section id="version-2" class="level5">
+<h5 class="anchored" data-anchor-id="version-2">version 2</h5>
+<div class="cell">
+<div class="cell-output cell-output-stdout">
+<pre><code>                                          Estimate Est.Error       Q2.5
+Intercept                                1.9360091 0.2583357  1.4530217
+conditionprequestions                   -0.7683197 0.1917910 -1.1476221
+prequestion_score                        0.8834829 0.2731825  0.3352216
+conditionprequestions:prequestion_score  0.8381171 0.2623678  0.3383222
+                                             Q97.5
+Intercept                                2.4637996
+conditionprequestions                   -0.3856397
+prequestion_score                        1.4082128
+conditionprequestions:prequestion_score  1.3589235</code></pre>
+</div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(secondary_model_data, <span class="fu">aes</span>(<span class="at">x=</span>prequestion_score, <span class="at">y=</span>initiate_playback, <span class="at">color=</span>condition))<span class="sc">+</span></span>
+<span id="cb27-2"><a href="#cb27-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method=</span><span class="st">"glm"</span>, <span class="at">method.args=</span><span class="fu">list</span>(<span class="at">family=</span><span class="st">"binomial"</span>), <span class="at">se=</span><span class="cn">FALSE</span>)<span class="sc">+</span></span>
+<span id="cb27-3"><a href="#cb27-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">facet_wrap</span>(<span class="sc">~</span>course_id)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>`geom_smooth()` using formula = 'y ~ x'</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: glm.fit: algorithm did not converge</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: glm.fit: algorithm did not converge</code></pre>
+</div>
+<div class="cell-output cell-output-stderr">
+<pre><code>Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred
+Warning: glm.fit: fitted probabilities numerically 0 or 1 occurred</code></pre>
+</div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="analysis_files/figure-html/unnamed-chunk-75-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
 </section>
 <section id="in-major-1" class="level4">
 <h4 class="anchored" data-anchor-id="in-major-1">In Major</h4>
@@ -553,6 +2079,8 @@ conditionprequestions:submDaysBeforeDueDate -0.146047512  0.12925940</code></pre
 <li><label><input type="checkbox" checked="">Use the priors from https://osf.io/5atq3</label></li>
 <li><label><input type="checkbox" checked="">Can you please add the component to the project site at: https://osf.io/t5ma3/? – I don’t want to accidentally set things up wrong.</label></li>
 <li><label><input type="checkbox">Upload model fits to OSF</label></li>
+<li><label><input type="checkbox">Visualize the pre question score student level moderator</label></li>
+<li><label><input type="checkbox">Remove the overall model, since we aren’t using it anywhere.</label></li>
 <li><label><input type="checkbox" checked="">Simple models where “Percentage of video viewed” and “Did the student start the video at all?” are the outcomes (DVs), with condition as the IV and no interaction terms.</label></li>
 <li><label><input type="checkbox" checked="">Limit to only those students who did initiate playback, and re-run the simple model above, where “Percentage of video viewed” is the DV and condition is the IV.</label></li>
 <li><label><input type="checkbox" checked="">Models where “Did the student start the video at all?” is the DV, and where we include condition X moderator interactions. For these, it doesn’t really make sense to include any exposure-level interaction terms regarding the video (e.g., duration, was the question answered) because students didn’t watch at least one video, but minimally we should measure the interaction with:</label>
