@@ -21,6 +21,13 @@ library(gt)
 ```
 
 ```{r}
+#| label: Configuration
+#| include: false
+
+options(dplyr.summarise.inform = FALSE)
+```
+
+```{r}
 #| label: Get data from OSF
 #| include: false
 
@@ -71,9 +78,17 @@ descriptives_consenting_participant_per_class_sd <- participants %>%
 descriptives_consenting_with_outcomes <- datFrm %>% summarize(sum=length(unique(participant_id)))
 ```
 
+Summary of participants:
+
+- There are `r descriptives_num_classes` classes across `r descriptives_num_institutions` institutions.
+- There are `r descriptives_enrolled_student_sum` enrolled students, with an average of `r descriptives_enrolled_student_per_class_mean` students per class.
+- There are `r descriptives_consenting_participant_sum` consenting participants, with an average of `r descriptives_consenting_participant_per_class_mean` participants per class (SD = `r descriptives_consenting_participant_per_class_sd`).
+- There are `r descriptives_consenting_with_outcomes$sum` consenting participants with outcome scores.
+
 ```{r}
 #| label: tbl-course-descriptives
 #| echo: false
+#| tbl-cap: Summary of each course
 
 course_descriptives <- tibble(
   course_id = classes %>% pull(course_id),
@@ -114,6 +129,251 @@ gt(course_descriptives) %>%
 classes %>% group_by(affiliation) %>% summarize(n=length(unique(course_id))) %>% gt()
 ```
 
+## Treatment characteristics
+
+```{r}
+#| label: Treatment characteristics
+#| include: false
+
+treatment_pct_watched_both <- datFrm %>% 
+  pivot_longer(
+    cols = c(submit_flag_prequestions,submit_flag_control), 
+    names_to = "condition", 
+    values_to="submission_flag"
+  ) %>% 
+  summarize(pctSubmittingBoth = mean(submission_flag))
+
+treatment_pct_watched_by_condiiton <- datFrm %>% 
+  summarize(pct_submit_prequesitons = mean(submit_flag_prequestions),
+            pct_submit_control = mean(submit_flag_control))
+
+treatment_median_time_spent_on_assignment <- datFrm %>% 
+  pivot_longer(
+    cols = c(duration_prequestions,duration_control),
+    names_to = "condition",
+    values_to="duration"
+  ) %>% 
+  select(participant_id,condition,duration) %>% 
+  na.omit() %>% 
+  summarize(median_duration = median(duration)/60) %>%
+  pull()
+
+treatment_median_time_spent_on_assignment_by_condition <- datFrm %>% 
+  pivot_longer(
+    cols = c(duration_prequestions,duration_control),
+    names_to = "condition",
+    values_to="duration"
+  ) %>% 
+  select(participant_id,condition,duration) %>% 
+  na.omit() %>% 
+  group_by(condition) %>% 
+  summarize(median_duration = median(duration)/60)
+
+treatment_class_average_min_and_max_score_on_prequestions <- datFrm %>% 
+  group_by(course_id) %>% 
+  summarize(class_prequestion = mean(prequestion_score)) %>% 
+  ungroup() %>% 
+  summarize(
+    mean_prequestion = mean(class_prequestion),
+    min_prequestion = min(class_prequestion),
+    max_prequestion = max(class_prequestion))
+```
+
+Treatment characteristics summary:
+
+- The average proportion of students who watched both prequestions and control assignments is `r treatment_pct_watched_both$pctSubmittingBoth`.
+- The average proportion of students who watched the prequestions assignment is `r treatment_pct_watched_by_condiiton$pct_submit_prequesitons` and the control assignment is `r treatment_pct_watched_by_condiiton$pct_submit_control`.
+- The median time spent on the assignment was `r treatment_median_time_spent_on_assignment` minutes.
+- The median time spent on the assignment by condition was `r treatment_median_time_spent_on_assignment_by_condition %>% filter(condition=="prequestions") %>% pull(median_duration) ` for prequestions and `r treatment_median_time_spent_on_assignment_by_condition %>% filter(condition=="control") %>% pull(median_duration)` for
+- The average prequestion score across classes was `r treatment_class_average_min_and_max_score_on_prequestions$mean_prequestion`, with a minimum of `r treatment_class_average_min_and_max_score_on_prequestions$min_prequestion` and a maximum of `r treatment_class_average_min_and_max_score_on_prequestions$max_prequestion`.
+
+## Effect of Prequestions on Student Behavior
+
+```{r}
+#| label: Effect of Prequestions on Student Behavior
+#| include: false
+
+# Percent of students who watched videos in their entirety
+student_beh_pct_watched_entire_video <- datFrm %>% 
+  pivot_longer(cols = c(viewpct_prequestions,viewpct_control),names_to = "condition",values_to="view_pct") %>% 
+  mutate(watchwhole = if_else(view_pct == 1,1,0)) %>% 
+  summarize(pct_watchwhole = mean(watchwhole))
+
+# Average percent of videos viewed
+student_beh_avg_pct_viewed <- datFrm %>% 
+  pivot_longer(cols = c(viewpct_prequestions,viewpct_control),names_to = "condition",values_to="view_pct") %>%
+  summarize(mean_viewpct = mean(view_pct))
+
+# Average percent of videos viewed by condition
+student_beh_avg_pct_viewed_by_condition <- datFrm %>% 
+  summarize(viewpct_prequestions = mean(viewpct_prequestions),
+                     viewpct_control = mean(viewpct_control))
+
+# Likelihood of not initiating media playback
+student_beh_proportion_who_didnt_initiate_video_playback <- datFrm %>% 
+  mutate(doNotWatch_preq = if_else(viewpct_prequestions == 0.00,1,0),
+                  doNotWatch_cont = if_else(viewpct_control == 0.00,1,0)) %>% 
+  summarize(doNotWatch_preq = mean(doNotWatch_preq), 
+            doNotWatch_cont = mean(doNotWatch_cont))
+
+# Stability across classes
+student_beh_didnt_watch_by_class <- datFrm %>% 
+  mutate(doNotWatch_preq = if_else(viewpct_prequestions == 0.00,1,0),
+                  doNotWatch_cont = if_else(viewpct_control == 0.00,1,0)) %>% 
+  group_by(course_id) %>% 
+  summarize(doNotWatch_preq = mean(doNotWatch_preq)*100,
+            doNotWatch_cont = mean(doNotWatch_cont)*100) %>%
+  mutate(doNotWatch_diff = (doNotWatch_preq-doNotWatch_cont))
+
+# If you filter out the students who did watch with control and did not watch with
+# prequestions, is there a difference in view_pct across the remaining student
+# sample?
+datFrm_students_who_watched_both_videos <- datFrm %>% 
+  filter(viewpct_prequestions > 0.00 & viewpct_control > 0.00)
+
+student_beh_pct_who_watched_both_videos <- nrow(datFrm_students_who_watched_both_videos)/nrow(datFrm)
+  
+student_beh_watched_both_by_class <- datFrm_students_who_watched_both_videos %>%
+  group_by(course_id) %>% 
+  summarize(viewpct_prequestions = mean(viewpct_prequestions),
+            viewpct_control = mean(viewpct_control),
+            nevents_prequestions = mean(nevents_prequestions),
+            nevents_control = mean(nevents_control)) %>%
+  ungroup() %>% 
+  summarize(viewpct_prequestions = mean(viewpct_prequestions),
+            viewpct_control = mean(viewpct_control),
+            nevents_prequestions = mean(nevents_prequestions),
+            nevents_control = mean(nevents_control))
+```
+
+- The average proportion of students who watched the entire video is `r student_beh_pct_watched_entire_video$pct_watchwhole`.
+- The average percentage of the video viewed is `r student_beh_avg_pct_viewed$mean_viewpct`.
+- The average percentage of the video viewed by condition is `r student_beh_avg_pct_viewed_by_condition$viewpct_prequestions` for prequestions and `r student_beh_avg_pct_viewed_by_condition$viewpct_control` for control.
+- The likelihood of not initiating media playback is `r student_beh_proportion_who_didnt_initiate_video_playback$doNotWatch_preq` for prequestions and `r student_beh_proportion_who_didnt_initiate_video_playback$doNotWatch_cont` for control.
+- The proportion of students who watched both videos is `r student_beh_pct_who_watched_both_videos`.
+- The average percentage of the video viewed by class for students who watched both videos is `r student_beh_watched_both_by_class$viewpct_prequestions` for prequestions and `r student_beh_watched_both_by_class$viewpct_control` for control.
+
+```{r}
+#| label: tbl-difference-in-playback-by-class
+#| echo: false
+#| tbl-cap: Difference in the percentage of students who did not initiate media playback by class, by condition
+
+student_beh_didnt_watch_by_class %>% arrange(desc(doNotWatch_diff)) %>% gt() %>% fmt_number()
+```
+
+```{r}
+#| label: fig-something
+#| echo: false
+#| fig-cap: Difference in playback percentage. Thick line is average. Thin lines are individual classes, with opacity indicating number of students.
+
+# Make a figure
+load(file = "data/view_df.Rdata")
+
+view_df <- merge(view_df,participants,by="participant_id",all.x=TRUE) %>% 
+  select(!c(consented_at, consent_source))
+
+view_summ <- view_df %>% 
+  group_by(condition_name, percent, course_id) %>% 
+  summarize(view_pct = mean(view), n = length(unique(participant_id))) %>% 
+  pivot_wider(id_cols = c(percent,course_id,n), names_from = condition_name,values_from = view_pct) %>% 
+  mutate(diff = `Pre-Questions` - Control) %>% 
+  select(percent,course_id,diff,n) %>% 
+  na.omit()
+
+view_summ2 <- view_summ %>% 
+  group_by(percent) %>% 
+  summarize(diff = mean(diff))
+
+ggplot(data = view_summ, aes(x=percent,y=diff)) +
+  geom_line(aes(group = course_id,alpha=n)) +
+  geom_line(data=view_summ2,aes(x=percent,y=diff), linewidth=3) +
+  geom_hline(yintercept=0) +
+  scale_x_continuous(limits = c(0,100), expand = c(0,0), labels=scales::percent_format(scale=1)) +
+  scale_y_continuous(labels=scales::percent_format(scale=100)) +
+  xlab("Video Playback") +
+  ylab("Percent Difference\n(Prequestion - Control)") +
+  theme(panel.grid=element_blank(), panel.background = element_blank(),legend.position="none",
+        axis.line.x = element_line(color="black"),
+        axis.line.y = element_line(color="black"))
+```
+
+
+## Effect of Prequestions on Student Learning
+
+### Overall outcome accuracy
+
+```{r}
+#| label: Overall outcome accuracy
+#| echo: false
+outcome_accuracy <- datFrm %>% 
+  mutate(outcomePreq = outcome_prequestions/points_possible_prequestions,
+         outcomeCont = outcome_control/points_possible_control) %>% 
+  pivot_longer(cols = c(outcomePreq,outcomeCont), names_to = "condition",values_to = "outcome") %>% 
+  group_by(course_id) %>%
+  summarize(course_level_outcome = mean(outcome)) %>%
+  summarize(mean_outcome = mean(course_level_outcome),
+            sd_outcome = sd(course_level_outcome),
+            se_outcome = sd_outcome/sqrt(n()))
+```
+
+The overall outcome accuracy is `r outcome_accuracy$mean_outcome` (SD = `r outcome_accuracy$sd_outcome`, SE = `r outcome_accuracy$se_outcome`).
+
+### Split by condition
+
+```{r}
+#| label: Outcome split by condition
+#| echo: false
+
+outcome_by_condition <- datFrm %>% 
+  mutate(outcomePreq = outcome_prequestions/points_possible_prequestions,
+         outcomeCont = outcome_control/points_possible_control) %>% 
+  group_by(course_id) %>% 
+  summarize(class_preqLearn = mean(outcomePreq),
+            class_contLearn = mean(outcomeCont)) %>% 
+  summarize(preqLearn = mean(class_preqLearn), preqLearnSD = sd(class_preqLearn), preqLearnSE = preqLearnSD/sqrt(n()),
+            contLearn = mean(class_contLearn), contLearnSD = sd(class_contLearn), contLearnSE = contLearnSD/sqrt(n()))
+```
+
+In the control condition, the average outcome accuracy was `r outcome_by_condition$contLearn` (SD = `r outcome_by_condition$contLearnSD`, SE = `r outcome_by_condition$contLearnSE`), and in the prequestions condition, the average outcome accuracy was `r outcome_by_condition$preqLearn` (SD = `r outcome_by_condition$preqLearnSD`, SE = `r outcome_by_condition$preqLearnSE`).
+
+### What percent of classes had higher performance in the prequestion condition?
+
+```{r}
+#| label: Prequestion performance vs control performance by class
+#| include: false
+
+performance_better_in_preq_counts <- datFrm %>% 
+  mutate(outcomePreq = outcome_prequestions/points_possible_prequestions,
+         outcomeCont = outcome_control/points_possible_control) %>% 
+  group_by(course_id) %>% 
+  summarize(class_preqLearn = mean(outcomePreq),
+            class_contLearn = mean(outcomeCont)) %>%
+  mutate(preqBetter = if_else(class_preqLearn > class_contLearn,1,0)) %>% 
+  summarize(count = sum(preqBetter), pct = mean(preqBetter))
+
+
+
+
+```
+
+Of the 30 classes, `r performance_better_in_preq_counts$count` (`r performance_better_in_preq_counts$pct*100`%) had higher performance in the prequestions condition.
+
+```{r}
+#| label: tbl-prequestion-performance
+#| echo: false
+
+datFrm %>% 
+  mutate(outcomePreq = outcome_prequestions/points_possible_prequestions,
+         outcomeCont = outcome_control/points_possible_control) %>% 
+  group_by(course_id) %>% 
+  summarize(class_preqLearn = mean(outcomePreq), 
+            class_contLearn = mean(outcomeCont)) %>%
+  mutate(preqBetter = class_preqLearn - class_contLearn) %>% 
+  arrange(desc(preqBetter)) %>%
+  gt()
+```
+
+
 ```{r}
 #| label: Prepare data
 #| include: false
@@ -121,7 +381,7 @@ classes %>% group_by(affiliation) %>% summarize(n=length(unique(course_id))) %>%
 overall_model_data <- datFrm %>%
   select(participant_id, course_id, outcome_prequestions, 
          points_possible_prequestions, outcome_control, 
-         points_possible_control) %>%
+         points_possible_control, exposure_order) %>%
   pivot_longer(cols = c(outcome_prequestions, outcome_control), 
                names_to = "outcome_phase", values_to = "score",
                names_prefix = "outcome_") %>%
@@ -229,7 +489,7 @@ run_brms_model <- function(filename, formula, data, priors, bulk_ess_threshold=1
 }
 ```
 
-This model is `score | trials(trials) ~ condition + (0 + condition | course_id) + (1 | course_id/participant_id)`. A fixed effect of condition (prequestions vs. control) and a random effect of condition per class, and random intercept of participant , nested in random intercept of class.
+This model is `score | trials(trials) ~ condition + (0 + condition + exposure_order | course_id) + (1 | course_id/participant_id)`. A fixed effect of condition (prequestions vs. control), random effects of condition and exposure per class, and random intercept of participant , nested in random intercept of class. Exposure is included as a random effect because there are two assignments per class, and each assignment may vary in difficulty or other factors that could affect the outcome.
 
 ```{r}
 #| label: Define priors
@@ -243,12 +503,12 @@ priors <- c(
 ```
 
 ```{r}
-#| label: My own model version
+#| label: Overall model
 #| include: false
 
 overall_fit <- run_brms_model(
   filename="overall", 
-  formula=bf(score | trials(trials) ~ condition + (0 + condition | course_id) + (1 | course_id/participant_id)),
+  formula=bf(score | trials(trials) ~ condition + (0 + condition + exposure_order | course_id) + (1 | course_id/participant_id)),
   data=overall_model_data,
   priors=priors
 )
@@ -300,11 +560,13 @@ load('moderators.Rdata')
 
 ### Exposure order
 
+We confirm here that there's no consistent fixed effect of exposure order.
+
 ```{r}
 #| label: Exposure order data
 #| include: false
 
-exposure_order_model_data <- datFrm %>%
+overall_model_data <- datFrm %>%
   select(participant_id, course_id, outcome_prequestions, 
          points_possible_prequestions, outcome_control, 
          points_possible_control, exposure_order) %>%
@@ -328,7 +590,7 @@ exposure_order_model_data <- datFrm %>%
 class_level_exposure_fit <- run_brms_model(
   "class_level_exposure",
   bf(score | trials(trials) ~ condition*exposure_order + (0 + condition + exposure_order | course_id) + (1 | course_id/participant_id)),
-  exposure_order_model_data,
+  overall_model_data,
   priors
 )
 ```
@@ -338,60 +600,15 @@ class_level_exposure_fit <- run_brms_model(
 fixef(class_level_exposure_fit)
 ```
 
-```{r}
-#| label: Exposure order moderator
-#| include: false
-
-exposure_fit <- run_brms_model(
-  "exposure_order",
-  bf(score | trials(trials) ~ condition + (0 + condition + exposure_order | course_id) + (1 | course_id/participant_id)),
-  exposure_order_model_data,
-  priors
-)
-
-```
-
-```{r}
-#| label: fig-overall-forest-plot-with-exposure-order
-#| echo: false
-#| fig-cap: Model estimates of the benefit of prequestions for each class, taking into account assignment-level effects, shown as an odds ratio (probability of correct responses in prequestions / probability of correct responses in control). The circle is the median of the posterior, the thicker line is a 66% highest-density interval, and the thin line is a 95% highest-density interval. The diamond at the bottom shows the overall effect across classes.
-
-forest_plot_data <- exposure_fit %>%
-  spread_draws(b_Intercept, b_conditionprequestions, r_course_id[id, condition]) %>%
-  filter(condition %in% c("conditionprequestions", "Intercept")) %>%
-  pivot_wider(names_from = condition, values_from = r_course_id) %>%
-  mutate(id = factor(id), 
-         course_effect = conditionprequestions + b_conditionprequestions,
-         odds = exp(course_effect)
-  )
-forest_plot_data$id <- fct_reorder(forest_plot_data$id, forest_plot_data$odds, median)
-
-overall_estimate_forest_plot <- forest_plot_data %>%
-  filter(id==98) %>%
-  mutate(odds = exp(b_conditionprequestions),
-         id=0)
-  
-ggplot(forest_plot_data, aes(x = odds, y=id)) +
-  stat_pointinterval()+
-  stat_pointinterval(data=overall_estimate_forest_plot, shape=18, point_size=5)+
-  labs(x="Odds ratio for correct response with prequestions / without prequestions ", y="Class ID")+
-  scale_x_continuous(breaks=c(seq(0,1,0.1),seq(1,10,1)))+
-  coord_trans(x = 'log10') +
-  geom_vline(xintercept=1)+
-  theme_minimal()+
-  theme(panel.grid.major.y = element_blank(), panel.grid.minor.x = element_blank())
-```
-
+### Number of Assignments
 
 ```{r}
 #| label: Merge class level moderators
 #| include: false
 
-class_level_model_data <- exposure_order_model_data %>%
+class_level_model_data <- overall_model_data %>%
   left_join(mod_class, by=join_by(course_id))
 ```
-
-### Number of Assignments
 
 ```{r}
 #| label: Class-level number of assignments
@@ -416,7 +633,7 @@ fixef(class_level_number_assignments_fit)
 #| label: Create student-level model data
 #| include: false
 
-student_level_model_data <- exposure_order_model_data %>%
+student_level_model_data <- overall_model_data %>%
   left_join(mod_student, by=join_by(participant_id, course_id)) %>%
   mutate(pretest = pretest / 100) %>%
   mutate(level = case_when(
@@ -446,8 +663,6 @@ fixef(student_level_grade_level_fit)
 ```
 
 ### Pretest
-
-*Note*: We get a warning that NAs are excluded.
 
 ```{r}
 #| label: student-level pretest moderator
@@ -504,6 +719,7 @@ student_level_prequestion_score_fit <- run_brms_model(
 #| echo: false
 fixef(student_level_prequestion_score_fit)
 ```
+
 #### Visualization of the interaction between prequestion score and condition
 
 ```{r}
@@ -530,7 +746,7 @@ ggplot(condition_prequestion_viz_data, aes(x=prequestion_score, y=improvement, s
 #| label: Create submission-level data
 #| include: false
 
-submission_level_model_data <- exposure_order_model_data %>%
+submission_level_model_data <- overall_model_data %>%
   left_join(mod_submission, by=join_by(participant_id, course_id, condition))
 
 ```
@@ -595,30 +811,6 @@ submission_level_n_events_fit <- run_brms_model(
 fixef(submission_level_n_events_fit)
 ```
 
-### Duration
-
-```{r}
-#| label: submission-level duration
-#| include: false
-#| eval: false
-
-submission_level_duration_fit <- run_brms_model(
-  "submission_level_duration",
-  bf(score | trials(trials) ~ condition*duration + (1 | course_id/participant_id) + (0 + exposure_order + duration*condition | course_id)),
-  submission_level_model_data,
-  priors
-)
-
-```
-
-This model won't run.
-
-```{r}
-#| echo: false
-#| eval: false
-fixef(submission_level_duration_fit)
-```
-
 ### Submission time
 
 ```{r}
@@ -645,7 +837,7 @@ fixef(submission_level_time_fit)
 #| label: Create exposure-level data
 #| include: false
 
-exposure_level_model_data <- exposure_order_model_data %>%
+exposure_level_model_data <- overall_model_data %>%
   mutate(exposure = case_when(
     exposure_order == 'control_then_prequestion' & condition == 'control' ~ 1,
     exposure_order == 'control_then_prequestion' & condition == 'prequestions' ~ 2,
@@ -654,8 +846,6 @@ exposure_level_model_data <- exposure_order_model_data %>%
   )) %>%
   left_join(mod_exposure, by=join_by(course_id, exposure)) 
 ```
-
-Current thinking about model structure: we don't have enough different exposures in each class to get class-level estimates of the exposure-level moderators. I'm including intercepts for courses and participants, as well as exposure-level slopes are condition effects within classes. The moderator is then estimated only at the population level. Theoretically I think we'd expect these to vary across classes or even across individuals, but I don't think we have the data to fit that kind of model.
 
 ### delay: days between assignment due date and exam date
 
@@ -978,6 +1168,7 @@ fixef(did_view_pretest_fit)
 ```
 #### Prequestion Score
 
+`initiate_playback ~ condition*prequestion_score + (1 | course_id/participant_id) + (0 + exposure_order + prequestion_score*condition | course_id)`
 ```{r}
 #| label: Prequestion score moderator for iniated viewing
 #| include: false
@@ -997,11 +1188,9 @@ did_view_prequestion_score_fit <- run_brms_model(
 fixef(did_view_prequestion_score_fit)
 ```
 
-```{r}
-summary(did_view_prequestion_score_fit)
-```
+##### Alternate version, treating the interaction as only a fixed effect.
 
-##### version 2
+`initiate_playback ~ condition*prequestion_score + (1 | course_id/participant_id) + (0 + exposure_order + prequestion_score + condition | course_id)`
 
 ```{r}
 #| label: Prequestion score moderator for iniated viewing v2
@@ -1020,12 +1209,6 @@ did_view_prequestion_score_v2_fit <- run_brms_model(
 #| echo: false
 
 fixef(did_view_prequestion_score_v2_fit)
-```
-
-```{r}
-ggplot(secondary_model_data, aes(x=prequestion_score, y=initiate_playback, color=condition))+
-  geom_smooth(method="glm", method.args=list(family="binomial"), se=FALSE)+
-  facet_wrap(~course_id)
 ```
 
 #### In Major
@@ -1106,8 +1289,8 @@ fixef(did_view_time_fit)
 - [x] Use the priors from https://osf.io/5atq3
 - [x] Can you please add the component to the project site at: https://osf.io/t5ma3/? -- I don't want to accidentally set things up wrong.
 - [ ] Upload model fits to OSF
-- [ ] Visualize the pre question score student level moderator
-- [ ] Remove the overall model, since we aren't using it anywhere. 
+- [x] Visualize the pre question score student level moderator
+- [x] Remove the overall model, since we aren't using it anywhere. 
 - [x] Simple models where "Percentage of video viewed" and "Did the student start the video at all?" are the outcomes (DVs), with condition as the IV and no interaction terms.
 - [x] Limit to only those students who did initiate playback, and re-run the simple model above, where "Percentage of video viewed" is the DV and condition is the IV.
 - [x] Models where "Did the student start the video at all?" is the DV, and where we include condition X moderator interactions.  For these, it doesn't really make sense to include any exposure-level interaction terms regarding the video (e.g., duration, was the question answered) because students didn't watch at least one video, but minimally we should measure the interaction with:
