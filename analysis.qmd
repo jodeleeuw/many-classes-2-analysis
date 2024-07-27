@@ -606,8 +606,11 @@ fixef(class_level_exposure_fit)
 #| label: Merge class level moderators
 #| include: false
 
+mod_class_scaled <- mod_class %>%
+  mutate(nbr_other_assessments = nbr_other_assessments / max(nbr_other_assessments))
+
 class_level_model_data <- overall_model_data %>%
-  left_join(mod_class, by=join_by(course_id))
+  left_join(mod_class_scaled, by=join_by(course_id))
 ```
 
 ```{r}
@@ -633,9 +636,12 @@ fixef(class_level_number_assignments_fit)
 #| label: Create student-level model data
 #| include: false
 
+mod_student_scaled <- mod_student %>%
+  mutate(pretest = pretest / max(pretest, na.rm = TRUE),
+         prequestion_score = prequestion_score / max(prequestion_score))
+
 student_level_model_data <- overall_model_data %>%
-  left_join(mod_student, by=join_by(participant_id, course_id)) %>%
-  mutate(pretest = pretest / 100) %>%
+  left_join(mod_student_scaled, by=join_by(participant_id, course_id)) %>%
   mutate(level = case_when(
     level %in% c(6,7,8) ~ "middle school",
     level %in% c(9,10,11,12) ~ "high school",
@@ -746,8 +752,13 @@ ggplot(condition_prequestion_viz_data, aes(x=prequestion_score, y=improvement, s
 #| label: Create submission-level data
 #| include: false
 
+mod_submission_scaled <- mod_submission %>%
+  mutate(viewpct = viewpct / max(viewpct, na.rm = TRUE),
+         nevents = nevents / max(nevents, na.rm = TRUE),
+         submDaysBeforeDueDate = submDaysBeforeDueDate / max(submDaysBeforeDueDate, na.rm = TRUE))
+
 submission_level_model_data <- overall_model_data %>%
-  left_join(mod_submission, by=join_by(participant_id, course_id, condition))
+  left_join(mod_submission_scaled, by=join_by(participant_id, course_id, condition))
 
 ```
 
@@ -837,6 +848,15 @@ fixef(submission_level_time_fit)
 #| label: Create exposure-level data
 #| include: false
 
+# scale continuous variables in mod_exposure
+mod_exposure_scaled <- mod_exposure %>%
+  mutate(delay = delay / max(delay, na.rm = TRUE),
+         pct_correct = pct_correct / max(pct_correct, na.rm = TRUE),
+         video_length = video_length / max(video_length, na.rm = TRUE),
+         avg_time_of_prequestions = avg_time_of_prequestions / max(avg_time_of_prequestions, na.rm = TRUE),
+         time_answering_preqs = time_answering_preqs / max(time_answering_preqs, na.rm = TRUE),
+         preq_difficulty = preq_difficulty / max(preq_difficulty, na.rm = TRUE))
+
 exposure_level_model_data <- overall_model_data %>%
   mutate(exposure = case_when(
     exposure_order == 'control_then_prequestion' & condition == 'control' ~ 1,
@@ -844,7 +864,7 @@ exposure_level_model_data <- overall_model_data %>%
     exposure_order == 'prequestions_then_control' & condition == 'control' ~ 2,
     exposure_order == 'prequestions_then_control' & condition == 'prequestions' ~ 1,
   )) %>%
-  left_join(mod_exposure, by=join_by(course_id, exposure)) 
+  left_join(mod_exposure_scaled, by=join_by(course_id, exposure)) 
 ```
 
 ### delay: days between assignment due date and exam date
@@ -1047,7 +1067,10 @@ moderator_fits <- list(
 moderator_model_info <- tibble(
   model = as.character(1:length(moderator_fits)),
   model_level = c("class", "class", "student", "student", "student", "student", "submission", "submission", "submission", "submission", "exposure", "exposure", "exposure", "exposure", "exposure", "exposure", "exposure", "exposure"),
-  effect = c("exposure_order", "nbr_other_assessments", "level", "pretest", "in_major", "prequestion_score", "viewpct", "initiate_playback", "nevents", "submDaysBeforeDueDate", "delay", "pct_correct", "video_length", "avg_time_of_prequestions", "time_answering_preqs", "answer_not_provided", "require_memorization", "preq_difficulty")
+  pretty_model_level = c("Class", "Class", "Student", "Student", "Student", "Student", "Submission", "Submission", "Submission", "Submission", "Assignment", "Assignment", "Assignment", "Assignment", "Assignment", "Assignment", "Assignment", "Assignment"),
+  effect = c("exposure_order", "nbr_other_assessments", "level", "pretest", "in_major", "prequestion_score", "viewpct", "initiate_playback", "nevents", "submDaysBeforeDueDate", "delay", "pct_correct", "video_length", "avg_time_of_prequestions", "time_answering_preqs", "answer_not_provided", "require_memorization", "preq_difficulty"),
+  pretty_name = c("Exposure order", "Number of other assessments", "Grade level", "Pretest score", "Course in major", "Prequestion score", "Percentage of video viewed", "Initiated video playback", "Number of click events", "Submission time", "Days between assignment and exam", "Avg percent correct for exam items", "Video length", "Avg time in video of prequestions", "Time in video answering prequestions", "Answer to prequestions not provided in video", "Requires memorization", "Prequestion difficulty"),
+  continuous_measure = c(FALSE, TRUE, FALSE, TRUE, FALSE, TRUE, TRUE, FALSE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, FALSE, FALSE, TRUE)
 )
 
 # extract the interaction term from each model, using the summary of the model
@@ -1058,12 +1081,14 @@ moderator_forest_plot_data <- lapply(moderator_fits, function(fit){
     select(Estimate, Q2.5, Q97.5)
 }) %>% bind_rows(.id="model") %>% left_join(moderator_model_info, by="model")
 
-ggplot(moderator_forest_plot_data, aes(x=Estimate, y=effect, xmin=Q2.5, xmax=Q97.5))+
+ggplot(moderator_forest_plot_data, aes(x=Estimate, y=pretty_name, xmin=Q2.5, xmax=Q97.5, shape=continuous_measure))+
   geom_pointrange()+
-  facet_grid(model_level~., scales="free_y", space="free")+
+  scale_shape_manual(values=c(15,16), name="", labels=c("Categorical measure", "Normalized continuous measure"))+
+  facet_grid(pretty_model_level~., scales="free_y", space="free")+
   theme_bw()+
   theme(panel.grid.major.y=element_blank())+
-  labs(x="Effect estimate", y="Moderator")
+  labs(x="Effect estimate", y="Moderator")+
+  theme(legend.position = "bottom")
 
 ```
 
