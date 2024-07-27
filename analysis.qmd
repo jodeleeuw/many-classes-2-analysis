@@ -651,12 +651,14 @@ student_level_model_data <- overall_model_data %>%
 
 ### Grade Level
 
+We reconceptualized this as a class-level moderator, with middle/high/college split.
+
 ```{r}
-#| label: student-level grade level moderator
+#| label: class-level grade level moderator
 #| include: false
 
-student_level_grade_level_fit <- run_brms_model(
-  "student_level_grade_level",
+class_level_grade_level_fit <- run_brms_model(
+  "class_level_grade_level",
   bf(score | trials(trials) ~ condition*level + (1 | course_id/participant_id) + (0 + exposure_order + condition | course_id)),
   student_level_model_data,
   priors
@@ -665,7 +667,7 @@ student_level_grade_level_fit <- run_brms_model(
 
 ```{r}
 #| echo: false
-fixef(student_level_grade_level_fit)
+fixef(class_level_grade_level_fit)
 ```
 
 ### Pretest
@@ -1046,7 +1048,7 @@ fixef(exposure_level_preq_difficulty_fit)
 moderator_fits <- list(
   class_level_exposure_fit,
   class_level_number_assignments_fit,
-  student_level_grade_level_fit,
+  class_level_grade_level_fit,
   student_level_pretest_fit,
   student_level_major_fit,
   student_level_prequestion_score_fit,
@@ -1064,26 +1066,26 @@ moderator_fits <- list(
   exposure_level_preq_difficulty_fit
 )
 
-moderator_model_info <- tibble(
-  model = as.character(1:length(moderator_fits)),
-  model_level = c("class", "class", "student", "student", "student", "student", "submission", "submission", "submission", "submission", "exposure", "exposure", "exposure", "exposure", "exposure", "exposure", "exposure", "exposure"),
-  pretty_model_level = c("Class", "Class", "Student", "Student", "Student", "Student", "Submission", "Submission", "Submission", "Submission", "Assignment", "Assignment", "Assignment", "Assignment", "Assignment", "Assignment", "Assignment", "Assignment"),
-  effect = c("exposure_order", "nbr_other_assessments", "level", "pretest", "in_major", "prequestion_score", "viewpct", "initiate_playback", "nevents", "submDaysBeforeDueDate", "delay", "pct_correct", "video_length", "avg_time_of_prequestions", "time_answering_preqs", "answer_not_provided", "require_memorization", "preq_difficulty"),
-  pretty_name = c("Exposure order", "Number of other assessments", "Grade level", "Pretest score", "Course in major", "Prequestion score", "Percentage of video viewed", "Initiated video playback", "Number of click events", "Submission time", "Days between assignment and exam", "Avg percent correct for exam items", "Video length", "Avg time in video of prequestions", "Time in video answering prequestions", "Answer to prequestions not provided in video", "Requires memorization", "Prequestion difficulty"),
-  continuous_measure = c(FALSE, TRUE, FALSE, TRUE, FALSE, TRUE, TRUE, FALSE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, FALSE, FALSE, TRUE)
-)
-
 # extract the interaction term from each model, using the summary of the model
 
 moderator_forest_plot_data <- lapply(moderator_fits, function(fit){
-  fixef(fit) %>% as_tibble(rownames="Effect") %>%
+  fixef(fit) %>% 
+    as_tibble(rownames="Effect") %>%
     filter(str_detect(Effect, ":")) %>%
-    select(Estimate, Q2.5, Q97.5)
-}) %>% bind_rows(.id="model") %>% left_join(moderator_model_info, by="model")
+    select(Effect, Estimate, Q2.5, Q97.5)
+}) %>% 
+  bind_rows(.id="model") %>%
+  mutate(
+    model = 1:n(),
+    pretty_model_level = c("Class", "Class", "Class", "Class", "Student", "Student", "Student", "Submission", "Submission", "Submission", "Submission", "Assignment", "Assignment", "Assignment", "Assignment", "Assignment", "Assignment", "Assignment", "Assignment"),
+    effect = c("exposure_order", "nbr_other_assessments", "level", "level", "pretest", "in_major", "prequestion_score", "viewpct", "initiate_playback", "nevents", "submDaysBeforeDueDate", "delay", "pct_correct", "video_length", "avg_time_of_prequestions", "time_answering_preqs", "answer_not_provided", "require_memorization", "preq_difficulty"),
+    pretty_name = c("Exposure order", "Number of other assessments", "Grade level: High School", "Grade Level: Middle School", "Pretest score", "Course in major", "Prequestion score", "Percentage of video viewed", "Initiated video playback", "Number of click events", "Submission time", "Days between assignment and exam", "Avg percent correct for exam items", "Video length", "Avg time in video of prequestions", "Time in video answering prequestions", "Answer to prequestions not provided in video", "Requires memorization", "Prequestion difficulty"),
+    continuous_measure = c(FALSE, TRUE, FALSE, FALSE, TRUE, FALSE, TRUE, TRUE, FALSE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, TRUE, FALSE, FALSE, TRUE)
+)
 
 ggplot(moderator_forest_plot_data, aes(x=Estimate, y=pretty_name, xmin=Q2.5, xmax=Q97.5, shape=continuous_measure))+
   geom_pointrange()+
-  scale_shape_manual(values=c(15,16), name="", labels=c("Categorical measure", "Normalized continuous measure"))+
+  scale_shape_manual(values=c(15,16), name="", labels=c("Categorical measure", "Scaled continuous measure"))+
   facet_grid(pretty_model_level~., scales="free_y", space="free")+
   theme_bw()+
   theme(panel.grid.major.y=element_blank())+
