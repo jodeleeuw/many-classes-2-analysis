@@ -1300,29 +1300,3 @@ did_view_time_fit <- run_brms_model(
 
 fixef(did_view_time_fit)
 ```
-
-# TODO list
-
-- [x] Figure 1: Fix spelling of "proption"
-- [x] Figure 3: "pre-questions" -> "prequestions" (for consistency)
-- [ ] On one or both figures, add to y-axis in addition to class id: N, pct correct prequestions, pct correct control, {any others}
-- [ ] Make pretty for publication
-- [x] Run a model where exposure order is a fixed effect – we anticipate that there will be no effect, and that this will provide support for our decision to include exposure order as a class-level random effect
-- [x] Change the "Level" outcome to a categorical variable:
-    level %in% c(6,7,8) ~ "middle school"
-    level %in% c(9,10,11,12) ~ "high school"
-    (else) true ~ "college"
-- [x] Rerun grade level model
-- [x] Use the priors from https://osf.io/5atq3
-- [x] Can you please add the component to the project site at: https://osf.io/t5ma3/? -- I don't want to accidentally set things up wrong.
-- [ ] Upload model fits to OSF
-- [x] Visualize the pre question score student level moderator
-- [x] Remove the overall model, since we aren't using it anywhere. 
-- [x] Simple models where "Percentage of video viewed" and "Did the student start the video at all?" are the outcomes (DVs), with condition as the IV and no interaction terms.
-- [x] Limit to only those students who did initiate playback, and re-run the simple model above, where "Percentage of video viewed" is the DV and condition is the IV.
-- [x] Models where "Did the student start the video at all?" is the DV, and where we include condition X moderator interactions.  For these, it doesn't really make sense to include any exposure-level interaction terms regarding the video (e.g., duration, was the question answered) because students didn't watch at least one video, but minimally we should measure the interaction with:
-    - [x] Pretest
-    - [x] Prequestion score
-    - [x] In Major
-    - [x] Grade level
-    - [x] Submission time
